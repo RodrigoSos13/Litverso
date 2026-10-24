@@ -1,3 +1,4 @@
+import { Like } from "../models/Like.js";
 import { Post } from "../models/Post.js";
 import { Reading } from "../models/Reading.js";
 import { Book } from "../models/Book.js";
@@ -91,9 +92,14 @@ export async function getBookById(req, res) {
       ]),
     ]);
 
+    const likes = req.user?._id
+      ? await Like.find({ usuario: req.user._id, publicacao: { $in: posts.map(post => post._id) } }).select("publicacao").lean()
+      : [];
+    const liked = new Set(likes.map(like => String(like.publicacao)));
+
     res.json({
       livro: book,
-      posts,
+      posts: posts.map(post => ({ ...post.toObject(), curtido: liked.has(String(post._id)) })),
       estatisticasLeitura: readingStats,
     });
   } catch (error) {

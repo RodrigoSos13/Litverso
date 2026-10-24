@@ -4,6 +4,7 @@ import api from "../services/api";
 import BookDescription from "../components/BookDescription";
 import BookCover from "../components/BookCover";
 import StarRating from "../components/StarRating";
+import PostCard from "../components/PostCard";
 import FanartComposer from "../components/FanartComposer";
 
 const initialReadingForm = {
@@ -21,12 +22,14 @@ function BookPage() {
   const { id } = useParams();
   const { currentUserId } = useOutletContext();
   const [data, setData] = useState(null);
+  const [activeSection, setActiveSection] = useState("community");
   const [expandedDescription, setExpandedDescription] = useState(false);
   const [readingForm, setReadingForm] = useState(initialReadingForm);
   const [savedStatus, setSavedStatus] = useState(null);
   const [savingReading, setSavingReading] = useState(false);
   const [activeReadingMenu, setActiveReadingMenu] = useState(null);
 
+  const sectionTabsRef = useRef([]);
   const readingActionsRef = useRef(null);
   const readingTriggerRef = useRef(null);
 
@@ -55,6 +58,7 @@ function BookPage() {
 
   useEffect(() => {
     setExpandedDescription(false);
+    setActiveSection("community");
     loadBookPage().catch(console.error);
   }, [id]);
 
@@ -98,6 +102,7 @@ function BookPage() {
     accumulator[item._id] = item.count;
     return accumulator;
   }, {});
+  const communityPosts = data.posts.filter((post) => post.tipo === "resenha" || post.tipo === "citacao");
   const fanarts = data.posts.filter((post) => post.tipo === "fanart");
 
   async function handleRatingSubmit(event) {
@@ -312,10 +317,47 @@ function BookPage() {
         </div>
       </section>
 
-      <section>
+      <section aria-label="Publicações sobre o livro">
+        <div role="tablist" aria-label="Publicações sobre o livro" className="mb-6 flex gap-8 border-b border-line" onKeyDown={event => {
+          const keys = ["community", "fanarts"];
+          const next = ["ArrowLeft", "ArrowRight"].includes(event.key) ? (activeSection === "community" ? 1 : 0) : event.key === "Home" ? 0 : event.key === "End" ? 1 : null;
+          if (next !== null) {
+            event.preventDefault();
+            setActiveSection(keys[next]);
+            sectionTabsRef.current[next]?.focus();
+          }
+        }}>
+          {[
+            { key: "community", label: "Comunidade" },
+            { key: "fanarts", label: "Fanarts" },
+          ].map(({ key, label }, index) => (
+            <button key={key} ref={node => { sectionTabsRef.current[index] = node; }} type="button" role="tab"
+              id={`book-tab-${key}`} aria-selected={activeSection === key} aria-controls={`book-panel-${key}`}
+              tabIndex={activeSection === key ? 0 : -1} onClick={() => setActiveSection(key)}
+              className={`relative -mb-px flex min-h-12 items-center justify-center gap-2.5 border-b-2 px-1 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper ${activeSection === key ? "border-copper text-ink" : "border-transparent text-mist/70 hover:text-ink"}`}>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={`h-[18px] w-[18px] transition-colors ${activeSection === key ? "text-copper" : ""}`}>
+                {key === "community" ? <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87" /><circle cx="9" cy="7" r="4" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></> : <><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></>}
+              </svg>
+              {label}
+            </button>
+          ))}
+        </div>
+        <div role="tabpanel" id={`book-panel-${activeSection}`} aria-labelledby={`book-tab-${activeSection}`} tabIndex={0} className="min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper">
+        {activeSection === "community" ? (
+          <>
+            <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col gap-6 pb-8 sm:gap-8">
+              <h2 className="sr-only">Resenhas e citações</h2>
+              {communityPosts.map(post => (
+                <PostCard key={post._id} post={post} currentUserId={currentUserId} fullWidth feedPreview showBook={false}
+                  onDeleted={postId => setData(current => ({ ...current, posts: current.posts.filter(item => item._id !== postId) }))} />
+              ))}
+              {communityPosts.length === 0 && <p className="py-6 text-sm text-mist">Ainda não há resenhas ou citações deste livro.</p>}
+            </div>
+          </>
+        ) : (
+          <>
         <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.22em] text-copper">Aba de fanart</p>
             <h2 className="font-display text-3xl">Fanarts deste livro</h2>
           </div>
           <span className="text-sm text-mist">{fanarts.length} fanarts</span>
@@ -346,6 +388,9 @@ function BookPage() {
               Nenhuma fanart por aqui ainda.
             </p>
           )}
+        </div>
+          </>
+        )}
         </div>
       </section>
     </div>

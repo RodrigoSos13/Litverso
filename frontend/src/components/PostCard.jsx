@@ -5,9 +5,23 @@ import api from "../services/api";
 import PostText from "./PostText";
 import BookCover from "./BookCover";
 
-function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false, onPinned, onDeleted }) {
+function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false, showBook = true, onPinned, onDeleted }) {
   const [deleted, setDeleted] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [textExpanded, setTextExpanded] = useState(false);
+  const [textOverflows, setTextOverflows] = useState(false);
+  const textElement = useRef(null);
+
+  useEffect(() => {
+    if (!feedPreview || expanded || textExpanded || deleted) return;
+    const element = textElement.current;
+    if (!element) return;
+    const measure = () => setTextOverflows(element.scrollHeight > element.clientHeight + 1);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [feedPreview, expanded, textExpanded, deleted, post.texto]);
   const dialog = useRef(null);
   const cardElement = useRef(null);
   const [cardHeight, setCardHeight] = useState(0);
@@ -35,6 +49,36 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
   const [avatarFailed, setAvatarFailed] = useState(false);
   useEffect(() => { setAvatarFailed(false); }, [post.usuario?.urlAvatar]);
   const [commentText, setCommentText] = useState("");
+  const [commentToDelete, setCommentToDelete] = useState(null);
+  const [activeCommentMenu, setActiveCommentMenu] = useState(null);
+  const commentMenuRef = useRef(null);
+  const commentMenuTriggerRef = useRef(null);
+
+  useEffect(() => {
+    if (!activeCommentMenu) return;
+    function dismiss(event) {
+      if (!commentMenuRef.current?.contains(event.target)) setActiveCommentMenu(null);
+    }
+    function escape(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        setActiveCommentMenu(null);
+        commentMenuTriggerRef.current?.focus();
+      }
+    }
+    document.addEventListener("pointerdown", dismiss);
+    document.addEventListener("keydown", escape, true);
+    return () => {
+      document.removeEventListener("pointerdown", dismiss);
+      document.removeEventListener("keydown", escape, true);
+    };
+  }, [activeCommentMenu]);
+
+  useEffect(() => {
+    if (!expanded) { setActiveCommentMenu(null); setCommentToDelete(null); }
+  }, [expanded]);
+  const [deletingComment, setDeletingComment] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pinned, setPinned] = useState(Boolean(post.fixadoNoPerfil));
   const [pinning, setPinning] = useState(false);
@@ -95,6 +139,21 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
     } catch {
       setError("Não foi possível atualizar sua curtida. Tente novamente.");
     } finally { setLiking(false); }
+  }
+
+  async function handleDeleteComment(commentId) {
+    if (!isAuthor || deletingComment) return;
+    setDeletingComment(true);
+    setError("");
+    try {
+      await api.delete(`/comments/${commentId}`);
+      setComments(current => current.filter(comment => comment._id !== commentId));
+      setCommentCount(count => Math.max(0, count - 1));
+      setCommentToDelete(null);
+      setRetry(value => value + 1);
+    } catch {
+      setError("Não foi possível apagar o comentário. Tente novamente.");
+    } finally { setDeletingComment(false); }
   }
 
   async function handleCommentLike(comment) {
@@ -199,7 +258,7 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
         </div>
       </div>}
 
-      {post.livro && (
+      {showBook && post.livro && (
         <p className="mt-4 text-sm text-mist">
           Livro: {" "}
           <span className="group relative inline-block max-w-full align-bottom">
@@ -215,8 +274,8 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
         </p>
       )}
 
-      <p className={`mt-4 whitespace-pre-line break-words text-sm leading-6 text-slate-300 ${feedPreview && !expanded ? "line-clamp-5" : ""}`}><PostText text={post.texto} /></p>
-      {feedPreview && !expanded && ((post.texto?.length || 0) > 280 || (post.texto?.split("\n").length || 0) > 5) && <button type="button" onClick={openPost} aria-haspopup="dialog" className="mt-2 rounded text-xs font-semibold text-copper hover:text-glow">Continuar lendo <span aria-hidden="true">↗</span></button>}
+      <p ref={textElement} id={`post-text-${post._id}-${expanded ? "dialog" : "feed"}`} className={`mt-4 whitespace-pre-line break-words text-sm leading-6 text-slate-300 ${feedPreview && !expanded && !textExpanded ? "line-clamp-[10]" : ""}`}><PostText text={post.texto} /></p>
+      {feedPreview && !expanded && (textOverflows || textExpanded) && <button type="button" onClick={event => { event.stopPropagation(); setTextExpanded(current => !current); }} aria-expanded={textExpanded} aria-controls={`post-text-${post._id}-feed`} className="mt-2 rounded text-xs font-semibold text-copper hover:text-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper">{textExpanded ? "Mostrar menos" : "Continuar lendo"}</button>}
 
       {images.length > 0 && (
         <div style={feedPreview && !expanded ? { maxHeight: 420 } : undefined} className={`mt-4 grid gap-1 overflow-hidden rounded-xl border border-line/60 bg-midnight ${images.length > 1 ? "aspect-square grid-cols-2 grid-rows-2" : "grid-cols-1"}`}>
@@ -251,9 +310,24 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
             {comment.usuario?.urlAvatar && <img src={comment.usuario.urlAvatar} alt="" onError={event => { event.currentTarget.style.display = "none"; }} className="absolute inset-0 h-full w-full object-cover" />}
           </Link>
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
               <Link to={`/users/${comment.usuario?._id || comment.usuario}`} className="text-sm font-semibold text-ink transition hover:text-copper">{comment.usuario?.nome || "Leitor"}</Link>
               {comment.createdAt && <time dateTime={comment.createdAt} title={new Date(comment.createdAt).toLocaleString("pt-BR")} className="text-[11px] text-mist/60">{new Date(comment.createdAt).toLocaleDateString("pt-BR", { day: "numeric", month: "short" })}</time>}
+            </div>
+            {isAuthor && <div className="relative -mt-1 shrink-0" ref={activeCommentMenu === comment._id ? commentMenuRef : undefined}>
+              <button type="button" aria-label={`Opções do comentário de ${comment.usuario?.nome || "Leitor"}`} aria-expanded={activeCommentMenu === comment._id} aria-controls={`comment-options-${comment._id}`} disabled={deletingComment}
+                onClick={event => { commentMenuTriggerRef.current = event.currentTarget; setActiveCommentMenu(current => current === comment._id ? null : comment._id); }}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-mist/70 transition hover:bg-panelSoft hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper disabled:opacity-50">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><circle cx="5" cy="12" r="1.7" /><circle cx="12" cy="12" r="1.7" /><circle cx="19" cy="12" r="1.7" /></svg>
+              </button>
+              {activeCommentMenu === comment._id && <div id={`comment-options-${comment._id}`} className="absolute right-0 top-full z-30 mt-1 w-48 rounded-xl border border-line bg-panel p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+                <button type="button" onClick={() => { setActiveCommentMenu(null); setCommentToDelete(comment._id); }} className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-red-300 transition hover:bg-red-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6M14 10v6" /></svg>
+                  Apagar
+                </button>
+              </div>}
+            </div>}
             </div>
             <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 text-slate-300">{comment.texto}</p>
             <button type="button" onClick={() => handleCommentLike(comment)} disabled={!currentUserId || likingComments.has(comment._id)} aria-pressed={Boolean(comment.curtido)} aria-label={`${comment.curtido ? "Descurtir" : "Curtir"} comentário de ${comment.usuario?.nome || "Leitor"}`} className={`-ml-2 mt-1 inline-flex min-h-9 items-center gap-1.5 rounded-full px-2 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper disabled:opacity-50 ${comment.curtido ? "text-copper" : "text-mist/70 hover:text-copper"}`}>
@@ -261,6 +335,14 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
               <span>{comment.curtido ? "Curtido" : "Curtir"}</span>
               {comment.totalCurtidas > 0 && <span className="tabular-nums">· {comment.totalCurtidas}</span>}
             </button>
+
+            {isAuthor && commentToDelete === comment._id && <div role="group" aria-label="Confirmar exclusão do comentário" className="mt-2 rounded-xl border border-red-400/20 bg-red-400/5 p-3">
+              <p className="text-xs text-ink">Apagar este comentário? Esta ação não pode ser desfeita.</p>
+              <div className="mt-3 flex justify-end gap-2">
+                <button type="button" disabled={deletingComment} onClick={() => setCommentToDelete(null)} className="rounded-lg px-3 py-2 text-xs text-mist hover:text-ink disabled:opacity-50">Cancelar</button>
+                <button type="button" disabled={deletingComment} onClick={() => handleDeleteComment(comment._id)} className="rounded-lg bg-forest px-3 py-2 text-xs font-semibold text-white hover:bg-berry disabled:opacity-50">{deletingComment ? "Apagando…" : "Apagar comentário"}</button>
+              </div>
+            </div>}
           </div>
         </article>)}
       </div>}
