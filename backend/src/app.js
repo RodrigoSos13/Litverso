@@ -11,7 +11,7 @@ import commentRoutes from "./routes/commentRoutes.js";
 import likeRoutes from "./routes/likeRoutes.js";
 
 import authRoutes from "./auth/routes.js";
-import { requireAuth } from "./auth/session.js";
+import { requireAuth, optionalAuth } from "./auth/session.js";
 import { getNotifications, readNotifications, readNotification } from "./controllers/notificationController.js";
 const app = express();
 if (process.env.TRUST_PROXY === "1") app.set("trust proxy", 1);
@@ -32,7 +32,17 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api", requireAuth);
+// Explicit public read allowlist. All mutations and private endpoints still require a session.
+app.use("/api", (req, res, next) => {
+  res.set("Cache-Control", "private, no-store");
+  const publicRead = ["GET", "HEAD"].includes(req.method) && (
+    /^\/books(?:\/(?:catalog|genres|[a-f\d]{24}))?\/?$/i.test(req.path)
+    || /^\/posts(?:\/[a-f\d]{24})?\/?$/i.test(req.path)
+    || /^\/comments\/?$/.test(req.path)
+    || /^\/users(?:\/[a-f\d]{24}\/(?:profile|followers|following))?\/?$/i.test(req.path)
+  );
+  return (publicRead ? optionalAuth : requireAuth)(req, res, next);
+});
 app.use("/api", (req, res, next) => {
   if (!["GET", "HEAD", "OPTIONS"].includes(req.method)) {
     const isFollow = ["PUT", "DELETE"].includes(req.method) && /^\/users\/[a-fA-F0-9]{24}\/follow$/.test(req.path);

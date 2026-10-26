@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 const maxSize = 5 * 1024 * 1024;
 const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
 export default function FanartComposer({ bookId, onPublished }) {
+  const { requireLogin } = useAuth();
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState(null);
   const [caption, setCaption] = useState("");
@@ -99,7 +101,7 @@ export default function FanartComposer({ bookId, onPublished }) {
     <div className="mb-5">
       {success && <p role="status" className="mb-4 text-sm text-glow">Sua fanart foi publicada!</p>}
       {!open && error && <p role="alert" className="mb-4 text-sm text-red-300">{error}</p>}
-        <button ref={trigger} type="button" aria-haspopup="dialog" aria-expanded={open} aria-controls="fanart-dialog" onClick={() => { setOpen(true); setSuccess(false); setError(""); }} className="inline-flex items-center gap-2 rounded-xl bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-berry focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper">
+        <button ref={trigger} type="button" aria-haspopup="dialog" aria-expanded={open} aria-controls="fanart-dialog" onClick={() => { if (requireLogin("publicar uma fanart")) setOpen(true); setSuccess(false); setError(""); }} className="inline-flex items-center gap-2 rounded-xl bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-berry focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper">
           <span aria-hidden="true" className="text-xl">+</span> Adicionar fanart
         </button>
       {open && createPortal(

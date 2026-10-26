@@ -6,6 +6,7 @@ import BookCover from "../components/BookCover";
 import StarRating from "../components/StarRating";
 import PostCard from "../components/PostCard";
 import FanartComposer from "../components/FanartComposer";
+import { useAuth } from "../contexts/AuthContext";
 
 const initialReadingForm = {
   status: null,
@@ -20,6 +21,7 @@ const statusLabels = {
 
 function BookPage() {
   const { id } = useParams();
+  const { requireLogin } = useAuth();
   const { currentUserId } = useOutletContext();
   const [data, setData] = useState(null);
   const [activeSection, setActiveSection] = useState("community");
@@ -194,9 +196,7 @@ function BookPage() {
 
           <div className="mt-5 border-t border-line/60 pt-4">
             {!currentUserId ? (
-              <p className="text-sm text-mist">
-                Abra um perfil para avaliar ou adicionar este livro a sua lista.
-              </p>
+              <div className="space-y-3"><div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => requireLogin("avaliar este livro")} className="rounded-xl bg-gradient-to-r from-forest to-berry px-3 py-2.5 text-xs font-semibold text-white hover:brightness-110 focus-visible:outline-copper">Avaliar</button><button type="button" onClick={() => requireLogin("adicionar este livro à sua lista")} className="rounded-xl border border-line bg-panelSoft px-3 py-2.5 text-xs font-semibold text-white hover:border-copper/50 focus-visible:outline-copper">Adicionar à lista</button></div><p className="text-xs leading-5 text-mist">Sua próxima leitura merece um lugar. Entre ou crie uma conta para organizar sua biblioteca.</p></div>
             ) : (
               <div ref={readingActionsRef} className="relative">
                 <div className="grid grid-cols-2 gap-2">

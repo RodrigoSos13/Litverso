@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
 import BookCover from "./BookCover";
+import { useAuth } from "../contexts/AuthContext";
 
 const filters = [["all", "Todas"], ["resenha", "Resenhas"], ["fanart", "Fanarts"], ["opiniao", "Pensamentos"], ["citacao", "Citações"]];
 
 export default function CommunitySidebar({ currentUserId, postType, onTypeChange, onlyMine, onOnlyMineChange }) {
+  const { requireLogin } = useAuth();
   const [readings, setReadings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -30,7 +32,7 @@ export default function CommunitySidebar({ currentUserId, postType, onTypeChange
         {filters.map(([value, label]) => <button key={value} type="button" aria-pressed={postType === value} onClick={() => onTypeChange(value)} className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm transition ${postType === value ? "bg-copper/10 font-semibold text-copper" : "text-mist hover:bg-panelSoft hover:text-ink"}`}>{label}{postType === value && <span aria-hidden="true">✓</span>}</button>)}
       </div>
     </section>
-    <section className="rounded-2xl border border-line bg-panel p-5">
+    {!currentUserId ? <section className="rounded-2xl border border-copper/20 bg-panel p-5"><h3 className="font-display text-xl text-white">Toda leitura abre uma conversa.</h3><p className="mt-3 text-sm leading-6 text-mist">Crie sua biblioteca, encontre outros leitores e compartilhe o que ficou com você.</p><button type="button" onClick={() => requireLogin("criar sua biblioteca e participar")} className="mt-4 min-h-11 rounded-xl bg-forest px-4 text-sm font-semibold text-white hover:bg-berry focus-visible:outline-copper">Quero participar</button></section> : <section className="rounded-2xl border border-line bg-panel p-5">
       <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-semibold text-ink">Lendo agora</h3><span aria-hidden="true" className="text-copper">↗</span></div>
       <div className="mt-4 space-y-4">
         {loading && <p role="status" className="text-xs text-mist">Carregando suas leituras…</p>}
@@ -42,7 +44,7 @@ export default function CommunitySidebar({ currentUserId, postType, onTypeChange
         </Link>)}
       </div>
       {currentUserId && <Link to={`/users/${currentUserId}/library?status=lendo`} className="mt-4 inline-block rounded text-xs font-semibold text-copper hover:text-glow">Ver minha biblioteca →</Link>}
-    </section>
+    </section>}
     {currentUserId && <section className="rounded-2xl border border-line bg-panel p-5">
       <h3 className="text-sm font-semibold text-ink">Minha participação</h3>
       <button type="button" aria-pressed={onlyMine} onClick={() => onOnlyMineChange(!onlyMine)} className={`mt-4 flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm transition ${onlyMine ? "bg-copper/10 font-semibold text-copper" : "text-mist hover:bg-panelSoft hover:text-ink"}`}>Minhas publicações{onlyMine && <span aria-hidden="true">✓</span>}</button>

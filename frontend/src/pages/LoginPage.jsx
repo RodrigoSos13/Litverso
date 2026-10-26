@@ -1,12 +1,12 @@
 import api from "../services/api";
 import { useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function LoginPage() {
   const { user, loading, authenticate } = useAuth();
   const location = useLocation();
-  const [mode, setMode] = useState("login");
+  const [mode, setMode] = useState(() => new URLSearchParams(location.search).get("mode") === "register" ? "register" : "login");
   const [values, setValues] = useState({ identificador: "", nome: "", usuario: "", email: "", senha: "", confirmacao: "", codigo: "" });
   const [visible, setVisible] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
@@ -57,9 +57,19 @@ export default function LoginPage() {
     return <label className="block text-sm font-medium text-ink" htmlFor={name}>{label}<input id={name} name={name} value={values[name]} onChange={change} className={inputClass} required disabled={busy} {...props} /></label>;
   }
   return (
-    <div className="auth-screen min-h-screen text-ink">
+    <div className="auth-screen relative min-h-screen text-ink">
+      <div className="absolute right-5 top-6 z-20 sm:right-10 lg:top-8">
+              <Link
+                to="/"
+                className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-xl border border-copper/50 bg-copper/10 px-4 py-3 sm:px-5 text-sm font-semibold text-copper transition duration-200 hover:border-copper hover:bg-copper/15 hover:text-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper focus-visible:ring-offset-4 focus-visible:ring-offset-midnight"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z" /></svg>
+                Entrar como visitante
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 transition-transform motion-safe:group-hover:translate-x-1"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
+              </Link>
+      </div>
       <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <section className="auth-hero relative flex flex-col px-7 py-8 sm:px-14 lg:px-20 lg:py-12">
+        <section className="auth-hero relative flex flex-col px-7 pb-8 pt-28 sm:px-14 lg:px-20 lg:py-12">
           <div className="relative z-10 flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-xl border border-copper/40 text-copper" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 5v15M12 5C8 2 3 3 2 4v15c4-2 7-1 10 1 3-2 6-3 10-1V4c-4-2-7-1-10 1Z" /></svg></span><span className="font-display text-3xl font-bold tracking-tight text-white">litverso<span className="text-copper">.</span></span></div>
           <div className="relative z-10 flex max-w-lg flex-1 flex-col justify-center py-12 lg:py-14">
             <p className="mb-6 text-xs font-semibold uppercase tracking-[0.28em] text-copper">Um universo de histórias</p>
@@ -85,7 +95,7 @@ export default function LoginPage() {
             </div>
           </div>
         </section>
-        <main className="flex min-w-0 items-center justify-center border-line/60 px-5 pb-10 sm:px-10 lg:border-l lg:bg-midnight/50 lg:py-12">
+        <main className="flex min-w-0 flex-col items-center justify-center border-line/60 px-5 pb-10 sm:px-10 lg:border-l lg:bg-midnight/50 lg:pb-12 lg:pt-28">
           <section className="auth-card relative w-full max-w-md overflow-hidden rounded-3xl border border-line p-7 sm:p-10" aria-labelledby="auth-title">
             <div className="mb-8 grid grid-cols-2 gap-1 rounded-xl border border-line/60 bg-midnight/60 p-1" role="group" aria-label="Acesso à conta">
               {[{ value: "login", label: "Entrar" }, { value: "register", label: "Criar conta" }].map(option => (
@@ -98,7 +108,15 @@ export default function LoginPage() {
             <form onSubmit={submit} className="mt-8 space-y-5" aria-busy={busy}>
               {registering ? <>{field("nome", "Seu nome", { autoComplete: "name", maxLength: 100, placeholder: "Como podemos chamar você?" })}{field("usuario", "Nome de usuário", { autoComplete: "username", pattern: "[a-zA-Z0-9_]{3,30}", title: "Use de 3 a 30 letras, números ou sublinhados", placeholder: "seu_usuario" })}{field("email", "E-mail", { type: "email", autoComplete: "email", maxLength: 254, placeholder: "voce@exemplo.com" })}</> : mode === "login" ? field("identificador", "E-mail ou nome de usuário", { autoComplete: "username", maxLength: 254, placeholder: "voce@exemplo.com", autoFocus: true }) : field("email", "E-mail", { type: "email", autoComplete: "email", maxLength: 254, readOnly: verifying || resetting })}
               {(verifying || resetting) && field("codigo", "Código recebido por e-mail", { inputMode: "numeric", autoComplete: "one-time-code", pattern: "[0-9]{8}", minLength: 8, maxLength: 8 })}
-              {!verifying && !recovering && <div><div className="relative">{field("senha", "Senha", { type: visible ? "text" : "password", autoComplete: (registering || resetting) ? "new-password" : "current-password", minLength: (registering || resetting) ? 8 : 1, maxLength: 128, placeholder: registering ? "Crie uma senha segura" : "Digite sua senha", style: { paddingRight: "5.5rem" } })}<button type="button" onClick={() => setVisible(!visible)} className="absolute bottom-3.5 right-4 text-xs font-semibold text-copper hover:text-glow" aria-label={visible ? "Ocultar senha" : "Mostrar senha"} aria-pressed={visible}>{visible ? "Ocultar" : "Mostrar"}</button></div>{registering && <p className="mt-2 text-xs text-mist">Use no mínimo 8 caracteres.</p>}</div>}
+              {!verifying && !recovering && <div><div className="relative">{field("senha", "Senha", { type: visible ? "text" : "password", autoComplete: (registering || resetting) ? "new-password" : "current-password", minLength: (registering || resetting) ? 8 : 1, maxLength: 128, placeholder: registering ? "Crie uma senha segura" : "Digite sua senha", onKeyDown: event => {
+                if (event.key === "Tab" && !event.shiftKey && (registering || resetting)) {
+                  const confirmation = event.currentTarget.form?.elements.namedItem("confirmacao");
+                  if (confirmation && !confirmation.disabled) {
+                    event.preventDefault();
+                    confirmation.focus();
+                  }
+                }
+              }, style: { paddingRight: "5.5rem" } })}<button type="button" onClick={() => setVisible(!visible)} className="absolute bottom-3.5 right-4 text-xs font-semibold text-copper hover:text-glow" aria-label={visible ? "Ocultar senha" : "Mostrar senha"} aria-pressed={visible}>{visible ? "Ocultar" : "Mostrar"}</button></div>{registering && <p className="mt-2 text-xs text-mist">Use no mínimo 8 caracteres.</p>}</div>}
               {(registering || resetting) && <div className="relative">{field("confirmacao", "Confirme sua senha", { type: confirmationVisible ? "text" : "password", autoComplete: "new-password", maxLength: 128, placeholder: "Digite a senha novamente", style: { paddingRight: "5.5rem" } })}<button type="button" onClick={() => setConfirmationVisible(current => !current)} className="absolute bottom-3.5 right-4 text-xs font-semibold text-copper hover:text-glow" aria-label={confirmationVisible ? "Ocultar confirmação de senha" : "Mostrar confirmação de senha"} aria-controls="confirmacao" aria-pressed={confirmationVisible}>{confirmationVisible ? "Ocultar" : "Mostrar"}</button></div>}
               {notice && <p role="status" className="text-sm text-mist">{notice}</p>}
               {error && <p role="alert" className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-200">{error}</p>}

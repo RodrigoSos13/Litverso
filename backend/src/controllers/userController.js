@@ -10,10 +10,10 @@ export async function getUsers(req, res) {
   try {
     const query = String(req.query.q || "").trim().slice(0, 100).replace(/^@/, "");
     const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const filter = { _id: { $ne: req.user._id }, ...(query ? { $or: [{ nome: { $regex: escaped, $options: "i" } }, { usuario: { $regex: escaped, $options: "i" } }] } : {}) };
+    const filter = { ...(req.user ? { _id: { $ne: req.user._id } } : {}), ...(query ? { $or: [{ nome: { $regex: escaped, $options: "i" } }, { usuario: { $regex: escaped, $options: "i" } }] } : {}) };
     const users = await User.find(filter).select("nome usuario biografia urlAvatar").sort({ nome: 1, _id: 1 }).limit(30);
-    const follows = await Follow.find({ seguidor: req.user._id, seguido: { $in: users.map(user => user._id) } }).lean();
-    const followers = await Follow.find({ seguido: req.user._id, seguidor: { $in: users.map(user => user._id) } }).lean();
+    const follows = req.user ? await Follow.find({ seguidor: req.user._id, seguido: { $in: users.map(user => user._id) } }).lean() : [];
+    const followers = req.user ? await Follow.find({ seguido: req.user._id, seguidor: { $in: users.map(user => user._id) } }).lean() : [];
     const followsYou = new Set(followers.map(follow => String(follow.seguidor)));
     const following = new Set(follows.map(follow => String(follow.seguido)));
     res.json(users.map(user => ({ ...user.toObject(), seguindo: following.has(String(user._id)), segueVoce: followsYou.has(String(user._id)) })));
@@ -38,7 +38,7 @@ export async function getUserProfile(req, res) {
         .sort({ fixadoNoPerfil: -1, createdAt: -1 }),
     ]);
 
-    const likes = await Like.find({ usuario: req.user._id, publicacao: { $in: posts.map(post => post._id) } }).select("publicacao").lean();
+    const likes = req.user ? await Like.find({ usuario: req.user._id, publicacao: { $in: posts.map(post => post._id) } }).select("publicacao").lean() : [];
     const liked = new Set(likes.map(like => String(like.publicacao)));
 
     const groupedReadings = {
@@ -48,7 +48,7 @@ export async function getUserProfile(req, res) {
     };
 
     res.json({
-      usuario: { ...publicUser(user), ...await followState(req.user._id, user._id) },
+      usuario: { ...publicUser(user), ...await followState(req.user?._id, user._id) },
       leituras: groupedReadings,
       posts: posts.map(post => ({ ...post.toObject(), curtido: liked.has(String(post._id)) })),
     });
@@ -78,8 +78,8 @@ async function followState(viewer, target) {
   const [totalSeguidores, totalSeguindo, relation, reverseRelation] = await Promise.all([
     Follow.countDocuments({ seguido: target }),
     Follow.countDocuments({ seguidor: target }),
-    Follow.exists({ seguidor: viewer, seguido: target }),
-    Follow.exists({ seguidor: target, seguido: viewer }),
+    viewer ? Follow.exists({ seguidor: viewer, seguido: target }) : false,
+    viewer ? Follow.exists({ seguidor: target, seguido: viewer }) : false,
   ]);
   return { totalSeguidores, totalSeguindo, seguindo: Boolean(relation), segueVoce: Boolean(reverseRelation) };
 }

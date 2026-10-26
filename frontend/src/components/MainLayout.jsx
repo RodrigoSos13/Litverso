@@ -6,8 +6,8 @@ import { useAuth } from "../contexts/AuthContext";
 
 function MainLayout() {
   const [homeVisit, setHomeVisit] = useState(0);
-  const { user } = useAuth();
-  const currentUserId = user._id;
+  const { user, loading, error, restore, requireLogin } = useAuth();
+  const currentUserId = user?._id;
   const location = useLocation();
   const navigate = useNavigate();
   const search = new URLSearchParams(location.search).get("search") || "";
@@ -17,6 +17,9 @@ function MainLayout() {
     if (nextValue.trim()) params.set("search", nextValue.trim());
     navigate({ pathname: "/", search: params.toString() });
   }
+
+  if (loading) return <div role="status" className="flex min-h-screen items-center justify-center text-mist">Abrindo o litverso…</div>;
+  if (error) return <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6"><p role="alert">{error}</p><button type="button" onClick={restore} className="rounded-xl bg-forest px-5 py-3 text-white">Tentar novamente</button></div>;
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#0b1324_0%,#09111f_55%,#070d18_100%)] text-ink">
@@ -35,6 +38,7 @@ function MainLayout() {
           <div className="col-start-2 row-start-1 flex items-center justify-end gap-3 lg:col-start-3 lg:gap-5">
             <NavLink
               to="/create-book"
+              onClick={event => { if (!requireLogin("adicionar um livro ao catálogo")) event.preventDefault(); }}
               aria-label="Adicionar livro"
               title="Adicionar livro"
               className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-forest px-3 text-sm font-semibold text-white outline-none transition hover:bg-berry focus-visible:ring-2 focus-visible:ring-copper focus-visible:ring-offset-2 focus-visible:ring-offset-midnight sm:px-4"
@@ -44,10 +48,11 @@ function MainLayout() {
               </svg>
               <span className="hidden sm:inline">Adicionar livro</span>
             </NavLink>
-            <Notifications currentUserId={currentUserId} />
+            {user && <Notifications currentUserId={currentUserId} />}
+            {user ? <>
             <NavLink
               to={currentUserId ? `/users/${currentUserId}` : "/"}
-              aria-label={`Perfil de @${user.usuario}`}
+              aria-label={`Perfil de @${user?.usuario}`}
               title="Perfil"
               className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-mist outline-none transition hover:text-white focus-visible:ring-2 focus-visible:ring-copper"
             >
@@ -66,12 +71,13 @@ function MainLayout() {
                 <path d="M4 21v-2a8 8 0 0 1 16 0v2" />
               </svg>
             </NavLink>
+            </> : <div className="flex items-center gap-2"><NavLink to="/login" state={{ from: location }} className="rounded-lg px-2 py-3 text-sm text-mist hover:text-white">Entrar</NavLink><NavLink to="/login?mode=register" state={{ from: location }} className="hidden rounded-lg border border-copper/40 px-4 py-3 text-sm font-semibold text-copper transition hover:bg-copper/10 sm:inline-flex">Criar conta</NavLink></div>}
           </div>
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 py-6">
         <Outlet
-          key={homeVisit}
+          key={`${homeVisit}-${currentUserId || "guest"}`}
           context={{
             currentUserId,
             search,

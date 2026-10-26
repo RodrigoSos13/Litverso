@@ -46,7 +46,7 @@ export async function getPosts(req, res) {
       .populate("livro", "titulo autor urlCapa")
       .sort({ createdAt: -1 });
 
-    const likes = await Like.find({ usuario: req.user._id, publicacao: { $in: posts.map(post => post._id) } }).select("publicacao").lean();
+    const likes = req.user ? await Like.find({ usuario: req.user._id, publicacao: { $in: posts.map(post => post._id) } }).select("publicacao").lean() : [];
     const liked = new Set(likes.map(like => String(like.publicacao)));
     res.json(posts.map(post => ({ ...post.toObject(), curtido: liked.has(String(post._id)) })));
   } catch (error) {

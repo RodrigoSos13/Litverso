@@ -69,8 +69,9 @@ test("senhas recebem salt e rejeitam credenciais incorretas", async () => {
   assert.equal(await verifyPassword("wrong", first), false);
   assert.equal(await verifyPassword(password, undefined), false);
 });
-test("APIs bloqueiam visitantes e origens externas", async () => {
-  assert.equal((await request("/posts", { session: null })).status, 401);
+test("API permite leitura pública e bloqueia escrita anônima e origens externas", async () => {
+  assert.equal((await request("/posts", { session: null })).status, 200);
+  assert.equal((await request("/posts", { method: "POST", session: null, body: { texto: "Não deve gravar" } })).status, 401);
   assert.equal((await request("/auth/register", { method: "POST", origin: "https://other.example", body: {} })).status, 403);
 });
 test("cadastro valida dados, cria sessão segura e não expõe senha", async () => {
@@ -127,6 +128,42 @@ test("visitar perfil e forjar ID não permite agir como outro usuário", async (
   assert.equal(ownEdit.data.usuario, "test");
   assert.equal(ownEdit.data.email, undefined);
 });
+test("visitantes leem conteúdo público sem dados privados, mas não interagem", async () => {
+  const book = await Book.findOne();
+  const publicPaths = ["/books", "/books/catalog", "/books/genres", `/books/${book._id}`,
+    "/posts", `/posts/${post._id}`, `/comments?post=${post._id}`, "/users",
+    `/users/${otherUser._id}/profile`, `/users/${otherUser._id}/followers`, `/users/${otherUser._id}/following`];
+  for (const path of publicPaths) {
+    const response = await request(path, { session: null });
+    assert.equal(response.status, 200, path);
+    assert.doesNotMatch(JSON.stringify(response.data), /emailEncrypted|emailHash|passwordHash|authVersion/);
+  }
+  assert.equal((await request("/posts", { session: "litverse_session=invalid" })).status, 200);
+  const publicPost = (await request("/posts", { session: null })).data.find(item => item._id === post._id);
+  assert.equal(publicPost.curtido, false);
+  const comment = await Comment.findOne({ publicacao: post._id });
+  const mutations = [
+    ["POST", "/books", { titulo: "Bloqueado" }],
+    ["POST", "/books/google/import", { googleBooksId: "test" }],
+    ["POST", "/posts", { texto: "Bloqueado" }],
+    ["POST", "/comments", { publicacao: post._id, texto: "Bloqueado" }],
+    ["POST", "/likes", { publicacao: post._id }],
+    ["POST", "/readings", { livro: book._id }],
+    ["PATCH", `/posts/${post._id}/pin`, { fixadoNoPerfil: true }],
+    ["DELETE", `/posts/${post._id}`, {}],
+    ["PUT", `/comments/${comment._id}/like`, {}],
+    ["PUT", `/users/${otherUser._id}/follow`, {}],
+    ["PUT", `/users/${otherUser._id}`, { nome: "Bloqueado" }],
+  ];
+  for (const [method, path, body] of mutations) {
+    assert.equal((await request(path, { method, body, session: null })).status, 401, `${method} ${path}`);
+  }
+  for (const path of ["/readings", "/notifications", "/books/google/search?q=King", "/books/google/discover"]) {
+    assert.equal((await request(path, { session: null })).status, 401, path);
+  }
+  assert.equal((await Post.findById(post._id)).texto, "Hello");
+});
+
 test("API de leituras valida entradas, protege autoria e recalcula avaliações no CRUD", async () => {
   await Reading.init();
   const book = await Book.create({ titulo: "REST", autor: "Autor", genero: "Teste", descricao: "Livro para testar a API" });
@@ -360,7 +397,7 @@ test("catálogo pagina e prioriza português e capas inteiramente no banco", asy
     assert.deepEqual((await request("/books/catalog?search=naoexiste")).data.livros, []);
     assert.equal((await request("/books/catalog?page=-1")).status, 400);
     assert.equal((await request("/books/catalog?page=1.5")).status, 400);
-    assert.equal((await request("/books/catalog", { session: null })).status, 401);
+    assert.equal((await request("/books/catalog", { session: null })).status, 200);
   } finally { globalThis.fetch = originalFetch; }
 });
 

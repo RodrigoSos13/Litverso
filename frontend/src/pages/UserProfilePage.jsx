@@ -62,7 +62,7 @@ function UserProfilePage() {
               <button type="button" onClick={() => setConnections("following")} className="rounded hover:text-white focus-visible:outline-copper"><strong className="font-semibold text-ink">{usuario.totalSeguindo || 0}</strong> seguindo</button>
             </div>
           </div>
-          {currentUserId && id !== currentUserId && <FollowButton key={id} user={usuario} onChanged={loadProfile} />}
+          {id !== currentUserId && <FollowButton key={id} user={usuario} onChanged={loadProfile} />}
           {id === currentUserId && <button type="button" onClick={() => setEditing(true)} aria-label="Editar meu perfil" title="Editar perfil" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line text-mist transition hover:border-copper/50 hover:bg-panelSoft hover:text-copper"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m16 3 5 5M4 20l5-1L21 7a2.1 2.1 0 0 0-5-5L4 14l-1 7 6-2" /></svg></button>}
         </div>
         <section aria-labelledby="profile-library-title" className="mt-8">

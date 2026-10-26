@@ -17,7 +17,14 @@ Na raiz do projeto, execute:
 docker compose up --build -d --wait
 ```
 
-Acesse **http://localhost:8080** e clique em **Criar conta**. O banco começa vazio; você pode cadastrar livros manualmente.
+Acesse **http://localhost:8080** para explorar o catálogo e a comunidade como visitante.
+Para publicar, curtir, comentar, seguir leitores, avaliar ou organizar leituras,
+entre ou clique em **Criar conta**. O banco começa vazio; usuários autenticados
+podem cadastrar livros manualmente.
+
+O [modo visitante](docs/modo-visitante.md) permite consultar conteúdo público e
+exibe um convite de acesso ao tentar interagir. A API também exige autenticação
+para todas as alterações.
 
 O modo de desenvolvimento atualiza a interface e reinicia o backend ao salvar alterações no código. Após mudar dependências ou Dockerfiles, execute novamente o comando acima.
 

@@ -21,16 +21,21 @@ export async function endSession(req, res) {
   if (token) await Session.deleteOne({ token: digest(token) });
   res.clearCookie("litverse_session", options);
 }
-export async function requireAuth(req, res, next) {
+async function authenticateSession(req, res, next, optional = false) {
   try {
     const token = sessionToken(req);
     const session = token && await Session.findOne({ token: digest(token), expiresAt: { $gt: new Date() } });
     const user = session && await User.findById(session.user).select("+authVersion");
-    if (!user || (session.authVersion || 0) !== (user.authVersion || 0)) return res.status(401).json({ message: "Entre na sua conta para continuar." });
+    if (!user || (session.authVersion || 0) !== (user.authVersion || 0)) {
+      if (optional) return next();
+      return res.status(401).json({ message: "Entre na sua conta para continuar." });
+    }
     req.user = user;
     next();
   } catch { res.status(503).json({ message: "Não foi possível verificar sua sessão. Tente novamente." }); }
 }
+export const requireAuth = (req, res, next) => authenticateSession(req, res, next);
+export const optionalAuth = (req, res, next) => authenticateSession(req, res, next, true);
 export function publicUser(user) {
   const result = user.toObject();
   delete result.passwordHash;

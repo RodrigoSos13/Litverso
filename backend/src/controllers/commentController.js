@@ -43,7 +43,7 @@ export async function getComments(req, res) {
       .populate("usuario", "nome usuario urlAvatar")
       .sort({ createdAt: -1 });
 
-    res.json(comments.map(comment => presentComment(comment, req.user._id)));
+    res.json(comments.map(comment => presentComment(comment, req.user?._id)));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

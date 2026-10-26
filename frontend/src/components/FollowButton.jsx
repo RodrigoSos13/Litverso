@@ -1,7 +1,9 @@
 import { useEffect, useId, useRef, useState } from "react";
 import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function FollowButton({ user, onChanged }) {
+  const { requireLogin } = useAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
@@ -30,6 +32,7 @@ export default function FollowButton({ user, onChanged }) {
   useEffect(() => { if (open) option.current?.focus(); }, [open]);
 
   async function toggle() {
+    if (!requireLogin("seguir este leitor")) return;
     setBusy(true);
     setError("");
     try {

@@ -6,11 +6,13 @@ import CreatePostPage from "./CreatePostPage";
 import CommunitySidebar from "../components/CommunitySidebar";
 import CommunityPeople from "../components/CommunityPeople";
 import BookCatalog from "../components/BookCatalog";
+import { useAuth } from "../contexts/AuthContext";
 
 function HomePage() {
   const [params] = useSearchParams();
+  const { user, requireLogin } = useAuth();
   const [activeTab, setActiveTab] = useState(() => params.get("tab") === "comunidade" ? 1 : 0);
-  const [composing, setComposing] = useState(() => params.get("compose") === "1");
+  const [composing, setComposing] = useState(() => Boolean(user) && params.get("compose") === "1");
   const [composerVersion, setComposerVersion] = useState(0);
   const tabs = useRef([]);
   const composerDialog = useRef(null);
@@ -136,9 +138,9 @@ function HomePage() {
           </div>
         </div>
       </div>
-      {activeTab === 1 && <button type="button" disabled={!currentUserId} onClick={() => setComposing(true)} aria-haspopup="dialog" aria-controls="create-post-dialog" className="fixed bottom-6 right-4 z-40 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-forest px-5 py-3 text-sm font-semibold text-white shadow-card transition hover:bg-berry focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper focus-visible:ring-offset-2 focus-visible:ring-offset-midnight disabled:opacity-50 sm:right-8"><span aria-hidden="true" className="text-xl leading-none">+</span>Adicionar post</button>}
+      {activeTab === 1 && <button type="button" onClick={() => { if (requireLogin("publicar na comunidade")) setComposing(true); }} aria-haspopup="dialog" aria-controls="create-post-dialog" className="fixed bottom-6 right-4 z-40 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-forest px-5 py-3 text-sm font-semibold text-white shadow-card transition hover:bg-berry focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper focus-visible:ring-offset-2 focus-visible:ring-offset-midnight disabled:opacity-50 sm:right-8"><span aria-hidden="true" className="text-xl leading-none">+</span>Adicionar post</button>}
       <dialog ref={composerDialog} id="create-post-dialog" aria-label="Adicionar post" onCancel={event => { event.preventDefault(); setComposing(false); }} className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto overscroll-contain rounded-2xl border border-line bg-panel p-0 text-ink shadow-card backdrop:bg-black/70 backdrop:backdrop-blur-sm">
-        <CreatePostPage embedded onCancel={() => setComposing(false)} onPublished={post => { setPosts(current => [post, ...current]); setComposing(false); setComposerVersion(version => version + 1); }} key={composerVersion} />
+        {user && <CreatePostPage embedded onCancel={() => setComposing(false)} onPublished={post => { setPosts(current => [post, ...current]); setComposing(false); setComposerVersion(version => version + 1); }} key={composerVersion} />}
       </dialog>
     </div>
   );

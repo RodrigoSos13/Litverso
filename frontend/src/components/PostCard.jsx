@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import api from "../services/api";
 import PostText from "./PostText";
 import BookCover from "./BookCover";
+import { useAuth } from "../contexts/AuthContext";
 
 function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false, showBook = true, onPinned, onDeleted }) {
+  const { requireLogin } = useAuth();
   const [deleted, setDeleted] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [textExpanded, setTextExpanded] = useState(false);
@@ -128,7 +130,7 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
   }, [post._id, showComments, retry]);
 
   async function handleLike() {
-    if (!currentUserId || liking) return;
+    if (!requireLogin("curtir esta publicação") || liking) return;
     setLiking(true);
     setError("");
     try {
@@ -157,7 +159,7 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
   }
 
   async function handleCommentLike(comment) {
-    if (!currentUserId || commentLikesPending.current.has(comment._id)) return;
+    if (!requireLogin("curtir este comentário") || commentLikesPending.current.has(comment._id)) return;
     commentLikesPending.current.add(comment._id);
     setLikingComments(new Set(commentLikesPending.current));
     setError("");
@@ -174,7 +176,7 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
 
   async function handleComment(event) {
     event.preventDefault();
-    if (!currentUserId || !commentText.trim() || sending) return;
+    if (!requireLogin("comentar nesta publicação") || !commentText.trim() || sending) return;
     setSending(true);
     setError("");
     try {
@@ -286,7 +288,7 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
       )}
 
       <div className="mt-4 flex items-center gap-5 border-t border-line/60 pt-3 text-sm text-mist">
-        <button type="button" onClick={handleLike} disabled={!currentUserId || liking} aria-label={liked ? "Descurtir publicação" : "Curtir publicação"} aria-pressed={liked} className={`inline-flex items-center gap-2 rounded-lg p-2 transition hover:bg-forest/10 hover:text-forest disabled:opacity-50 ${liked ? "text-forest" : "text-mist"}`}>
+        <button type="button" onClick={handleLike} disabled={liking} aria-label={liked ? "Descurtir publicação" : "Curtir publicação"} aria-pressed={liked} className={`inline-flex items-center gap-2 rounded-lg p-2 transition hover:bg-forest/10 hover:text-forest disabled:opacity-50 ${liked ? "text-forest" : "text-mist"}`}>
           <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z" /></svg>
           <span className="tabular-nums">{likeCount}<span className="sr-only"> curtidas</span></span>
         </button>
@@ -330,7 +332,7 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
             </div>}
             </div>
             <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 text-slate-300">{comment.texto}</p>
-            <button type="button" onClick={() => handleCommentLike(comment)} disabled={!currentUserId || likingComments.has(comment._id)} aria-pressed={Boolean(comment.curtido)} aria-label={`${comment.curtido ? "Descurtir" : "Curtir"} comentário de ${comment.usuario?.nome || "Leitor"}`} className={`-ml-2 mt-1 inline-flex min-h-9 items-center gap-1.5 rounded-full px-2 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper disabled:opacity-50 ${comment.curtido ? "text-copper" : "text-mist/70 hover:text-copper"}`}>
+            <button type="button" onClick={() => handleCommentLike(comment)} disabled={likingComments.has(comment._id)} aria-pressed={Boolean(comment.curtido)} aria-label={`${comment.curtido ? "Descurtir" : "Curtir"} comentário de ${comment.usuario?.nome || "Leitor"}`} className={`-ml-2 mt-1 inline-flex min-h-9 items-center gap-1.5 rounded-full px-2 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper disabled:opacity-50 ${comment.curtido ? "text-copper" : "text-mist/70 hover:text-copper"}`}>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill={comment.curtido ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z" /></svg>
               <span>{comment.curtido ? "Curtido" : "Curtir"}</span>
               {comment.totalCurtidas > 0 && <span className="tabular-nums">· {comment.totalCurtidas}</span>}
@@ -347,6 +349,7 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
         </article>)}
       </div>}
 
+      {!currentUserId && <div className="shrink-0 border-t border-line bg-panel p-4 sm:p-6"><button type="button" onClick={() => requireLogin("comentar nesta publicação")} className="w-full rounded-full border border-copper/30 bg-copper/5 px-4 py-3 text-left text-sm text-copper transition hover:bg-copper/10 focus-visible:outline-copper">Entre na conversa · Fazer login ou criar conta →</button></div>}
       {currentUserId && <form className="sticky bottom-0 z-10 flex shrink-0 gap-2 border-t border-line bg-panel p-4 sm:p-6" onSubmit={handleComment}>
         <label htmlFor={`comment-${post._id}`} className="sr-only">Escreva um comentário</label>
         <input id={`comment-${post._id}`} type="text" maxLength={500} disabled={sending} value={commentText} onChange={event => setCommentText(event.target.value)} placeholder="Escreva um comentário…" className="min-w-0 flex-1 rounded-full border border-line bg-panelSoft px-4 py-2 text-sm outline-none focus:border-copper" />
