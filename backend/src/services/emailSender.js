@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const SEND_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
 const address = value => typeof value === "string" && /^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/.test(value) && !/[\r\n]/.test(value);
@@ -36,36 +37,50 @@ export function createEmailSender({ fetchImpl = (...args) => fetch(...args), con
     finally { if (pending === operation) pending = null; }
   }
 
-  return async function sendEmail({ to, subject, text }) {
+  return async function sendEmail({ to, subject, text, html }) {
     const env = { ...config() };
     if (!emailTransportConfigured(env)) throw new Error("EMAIL_NOT_CONFIGURED");
-    if (!address(to) || typeof subject !== "string" || /[\r\n]/.test(subject) || typeof text !== "string") throw new Error("INVALID_EMAIL_MESSAGE");
+    if (!address(to) || typeof subject !== "string" || /[\r\n]/.test(subject) || typeof text !== "string" || (html !== undefined && typeof html !== "string")) throw new Error("INVALID_EMAIL_MESSAGE");
+    let stage = "send";
+    let httpStatus;
     try {
       if ((env.EMAIL_PROVIDER || "resend") === "resend") {
         const response = await fetchImpl("https://api.resend.com/emails", {
           method: "POST", signal: AbortSignal.timeout(10000),
           headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-          body: JSON.stringify({ from: env.EMAIL_FROM, to: [to], subject, text }),
+          body: JSON.stringify({ from: env.EMAIL_FROM, to: [to], subject, text, ...(html ? { html } : {}) }),
         });
+        httpStatus = response.status;
         if (!response.ok) throw new Error("EMAIL_SEND_FAILED");
         return;
       }
 
-      const encodedText = Buffer.from(text, "utf8").toString("base64").match(/.{1,76}/g)?.join("\r\n") || "";
+      const encode = value => Buffer.from(value, "utf8").toString("base64").match(/.{1,76}/g)?.join("\r\n") || "";
+      const boundary = `litverso_${randomBytes(18).toString("hex")}`;
+      const content = html ? [
+        `Content-Type: multipart/alternative; boundary="${boundary}"`, "",
+        `--${boundary}`, 'Content-Type: text/plain; charset="UTF-8"',
+        "Content-Transfer-Encoding: base64", "", encode(text),
+        `--${boundary}`, 'Content-Type: text/html; charset="UTF-8"',
+        "Content-Transfer-Encoding: base64", "", encode(html), `--${boundary}--`, "",
+      ] : ['Content-Type: text/plain; charset="UTF-8"', "Content-Transfer-Encoding: base64", "", encode(text)];
       const mime = [
         `From: litverso <${env.GMAIL_USER}>`, `To: ${to}`,
         `Subject: =?UTF-8?B?${Buffer.from(subject, "utf8").toString("base64")}?=`,
-        "MIME-Version: 1.0", 'Content-Type: text/plain; charset="UTF-8"',
-        "Content-Transfer-Encoding: base64", "", encodedText,
+        "MIME-Version: 1.0", ...content,
       ].join("\r\n");
       const raw = Buffer.from(mime, "utf8").toString("base64url");
       for (let attempt = 0; attempt < 2; attempt++) {
+        stage = "oauth-refresh";
+        httpStatus = undefined;
         const token = await accessToken(env, attempt === 1);
+        stage = "gmail-send";
         const response = await fetchImpl(SEND_URL, {
-          method: "POST", signal: AbortSignal.timeout(10000),
+          method: "POST", signal: AbortSignal.timeout(20000),
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
           body: JSON.stringify({ raw }),
         });
+        httpStatus = response.status;
         // Only retry an explicit authentication rejection, never an ambiguous send failure.
         if (response.status === 401 && attempt === 0) { cached = null; await response.body?.cancel(); continue; }
         if (!response.ok) throw new Error("EMAIL_SEND_FAILED");
@@ -74,8 +89,12 @@ export function createEmailSender({ fetchImpl = (...args) => fetch(...args), con
         return;
       }
       throw new Error("EMAIL_SEND_FAILED");
-    } catch {
+    } catch (error) {
       // Upstream errors and response bodies may contain credentials or message contents.
+      const networkCodes = ["ETIMEDOUT", "ENETUNREACH", "ECONNRESET", "EAI_AGAIN", "ENOTFOUND", "UND_ERR_CONNECT_TIMEOUT"];
+      const reason = ["TimeoutError", "AbortError"].includes(error.name) ? "timeout"
+        : networkCodes.includes(error.cause?.code) ? error.cause.code : undefined;
+      console.error("[email] Falha no envio:", JSON.stringify({ provider: env.EMAIL_PROVIDER || "resend", stage, httpStatus, reason }));
       throw new Error("EMAIL_SEND_FAILED");
     }
   };

@@ -614,7 +614,8 @@ test("Gmail HTTPS confirma cadastro, recupera senha e descarta código quando en
     if (String(url) === "https://gmail.googleapis.com/gmail/v1/users/me/messages/send") {
       if (fail) return Promise.resolve(Response.json({}, { status: 503 }));
       const mime = Buffer.from(JSON.parse(options.body).raw, "base64url").toString("utf8");
-      const body = Buffer.from(mime.split("\r\n\r\n")[1], "base64").toString("utf8");
+      const encoded = /Content-Type: text\/plain; charset="UTF-8"\r\nContent-Transfer-Encoding: base64\r\n\r\n([A-Za-z0-9+/=\r\n]+?)\r\n--/.exec(mime)[1];
+      const body = Buffer.from(encoded, "base64").toString("utf8");
       deliveredCode = body.match(/\d{8}/)[0];
       return Promise.resolve(Response.json({ id: "gmail-sent" }));
     }

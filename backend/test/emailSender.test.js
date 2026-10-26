@@ -1,11 +1,54 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createEmailSender, emailTransportConfigured } from "../src/services/emailSender.js";
+import { authEmailTemplate } from "../src/services/authEmailTemplate.js";
 
 const env = { EMAIL_PROVIDER: "gmail", GMAIL_USER: "litverso@example.com", GMAIL_CLIENT_ID: "client",
   GMAIL_CLIENT_SECRET: "private-client-secret", GMAIL_REFRESH_TOKEN: "private-refresh-token" };
 const message = { to: "reader@outlook.com", subject: "Confirmação de e-mail", text: "Seu código é 12345678.\nNão compartilhe." };
 const token = () => Response.json({ access_token: "access-token", expires_in: 3600 });
+
+test("Gmail entrega HTML e texto alternativo com o mesmo código e conteúdo UTF-8", async () => {
+  const template = authEmailTemplate({ code: "01234567", purpose: "register" });
+  const send = createEmailSender({ config: () => env, fetchImpl: async (url, options) => {
+    if (url.includes("oauth2.googleapis.com")) return token();
+    const mime = Buffer.from(JSON.parse(options.body).raw, "base64url").toString("utf8");
+    const boundary = /boundary="([^"]+)"/.exec(mime)[1];
+    const parts = mime.split(`--${boundary}`);
+    assert.equal(parts.length, 4);
+    for (const [part, expected, type] of [[parts[1], template.text, "text/plain"], [parts[2], template.html, "text/html"]]) {
+      const [headers, body] = part.split("\r\n\r\n");
+      assert.ok(headers.includes(type));
+      assert.equal(Buffer.from(body.trim(), "base64").toString("utf8"), expected);
+      assert.ok(expected.includes("01234567"));
+    }
+    return Response.json({ id: "styled" });
+  } });
+  await send({ to: message.to, ...template });
+});
+
+test("modelos distinguem confirmação, recuperação e prévia e rejeitam conteúdo injetado", () => {
+  const reset = authEmailTemplate({ code: "12345678", purpose: "reset" });
+  assert.match(reset.html, /RECUPERAÇÃO DE SENHA/);
+  assert.doesNotMatch(reset.text, /Se você não pediu uma nova senha/);
+  assert.doesNotMatch(reset.html, /Sua senha permanece a mesma/);
+  assert.match(reset.html, /10 minutos/);
+  assert.doesNotMatch(reset.html, /<script|<img|<form|https?:\/\//);
+  assert.throws(() => authEmailTemplate({ code: '<img onerror="alert(1)">', purpose: "register" }));
+  assert.throws(() => authEmailTemplate({ code: "12345678", purpose: "unknown" }));
+  assert.match(authEmailTemplate({ code: "00000000", purpose: "register", preview: true }).text, /ilustrativo/);
+});
+
+test("Resend recebe o HTML junto do texto alternativo", async () => {
+  const template = authEmailTemplate({ code: "12345678", purpose: "reset" });
+  const send = createEmailSender({ config: () => ({ RESEND_API_KEY: "key", EMAIL_FROM: "sender@example.com" }), fetchImpl: async (_url, options) => {
+    const payload = JSON.parse(options.body);
+    assert.equal(payload.html, template.html);
+    assert.equal(payload.text, template.text);
+    return Response.json({ id: "sent" });
+  } });
+  await send({ to: message.to, ...template });
+});
 
 test("configuração seleciona explicitamente Gmail ou Resend, sem fallback silencioso", () => {
   assert.equal(emailTransportConfigured(env), true);

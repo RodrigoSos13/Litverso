@@ -24,16 +24,27 @@ async function canSend(email, purpose) {
 router.post("/register", async (req, res) => {
   const { nome, usuario, email, senha } = req.body;
   if (typeof nome !== "string" || !nome.trim() || nome.length > 100 || typeof usuario !== "string" || !/^[a-zA-Z0-9_]{3,30}$/.test(usuario) || typeof email !== "string" || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || typeof senha !== "string" || senha.length < 8 || senha.length > 128) return res.status(400).json({ message: "Informe nome, usuário válido, e-mail e uma senha de 8 a 128 caracteres." });
+  let stage = "password";
   try {
     const normalized = email.trim().toLowerCase();
     const registrationToken = randomBytes(32).toString("hex");
     // Hash even for existing accounts to reduce account enumeration by timing.
     const passwordHash = await hashPassword(senha);
+    stage = "rate-limit";
     const allowed = await canSend(normalized, "register");
+    stage = "lookup";
     const exists = await User.exists({ $or: [{ emailHash: emailHash(normalized) }, { usuario: usuario.toLowerCase() }] });
-    if (allowed && !exists) await issueCode(normalized, "register", { nome: nome.trim(), usuario: usuario.toLowerCase(), ...protectedEmail(normalized), passwordHash, registrationTokenHash: createHash("sha256").update(registrationToken).digest("hex") });
+    if (allowed && !exists) {
+      stage = "email-encryption";
+      const account = { nome: nome.trim(), usuario: usuario.toLowerCase(), ...protectedEmail(normalized), passwordHash, registrationTokenHash: createHash("sha256").update(registrationToken).digest("hex") };
+      stage = "issue-code";
+      await issueCode(normalized, "register", account);
+    }
     res.status(202).json({ message: genericMessage, registrationToken });
-  } catch { res.status(503).json({ message: "Não foi possível enviar o código. Tente novamente mais tarde." }); }
+  } catch {
+    console.error("[auth] Falha no cadastro:", stage);
+    res.status(503).json({ message: "Não foi possível enviar o código. Tente novamente mais tarde." });
+  }
 
 });
 router.post("/login", async (req, res) => {

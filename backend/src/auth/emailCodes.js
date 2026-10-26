@@ -1,5 +1,6 @@
 import { protectedEmail } from "./emailPrivacy.js";
 import { emailTransportConfigured, sendEmail } from "../services/emailSender.js";
+import { authEmailTemplate } from "../services/authEmailTemplate.js";
 import mongoose from "mongoose";
 import { createHash, createHmac, randomInt, timingSafeEqual } from "node:crypto";
 
@@ -47,8 +48,7 @@ export async function issueCode(email, purpose, payload) {
   try {
     await sendEmail({
       to: email,
-      subject: purpose === "register" ? "Confirme seu e-mail no litverso" : "Redefina sua senha no litverso",
-      text: `Seu código do litverso é: ${code}\n\nEle expira em 10 minutos e pode ser usado uma única vez. Não compartilhe este código. Se você não solicitou, ignore esta mensagem.`,
+      ...authEmailTemplate({ code, purpose }),
     });
   } catch {
     await EmailCode.deleteOne({ _id: challenge._id, codeHash: challenge.codeHash });
