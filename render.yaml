@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: litverso
+    runtime: node
+    plan: free
+    buildCommand: npm ci --prefix backend && npm ci --include=dev --prefix frontend && npm run build --prefix frontend
+    startCommand: npm start --prefix backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: SERVE_FRONTEND
+        value: "true"
+      - key: TRUST_PROXY
+        value: "1"
+      - key: VITE_API_URL
+        value: /api
+      - key: MONGODB_URI
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: EMAIL_ENCRYPTION_KEY
+        sync: false
+      - key: EMAIL_LOOKUP_KEY
+        sync: false
+      - key: EMAIL_CODE_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false

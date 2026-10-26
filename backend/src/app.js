@@ -1,6 +1,8 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import userRoutes from "./routes/userRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
 import readingRoutes from "./routes/readingRoutes.js";
@@ -59,5 +61,21 @@ app.use("/api/readings", readingRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/likes", likeRoutes);
+
+// Render runs the API and the compiled React app on the same origin.
+// Opt in explicitly so the separate frontend container keeps working.
+if (process.env.SERVE_FRONTEND === "true") {
+  const frontendPath = fileURLToPath(new URL("../../frontend/dist/", import.meta.url));
+  const indexPath = fileURLToPath(new URL("../../frontend/dist/index.html", import.meta.url));
+  if (!existsSync(indexPath)) throw new Error("Frontend ausente. Execute o build de frontend antes de iniciar com SERVE_FRONTEND=true.");
+
+  app.use("/api", (_req, res) => res.status(404).json({ message: "Rota não encontrada." }));
+  app.use(express.static(frontendPath, { index: false }));
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/assets/")) return next();
+    res.set("Cache-Control", "no-cache");
+    res.sendFile(indexPath);
+  });
+}
 
 export default app;

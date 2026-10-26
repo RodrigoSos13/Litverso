@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import app from "../src/app.js";
 import { prepareCatalog, saveCatalogVolumes, syncCatalog } from "../src/services/catalogSync.js";
 import { Book } from "../src/models/Book.js";
+import { Reading } from "../src/models/Reading.js";
 import { Post } from "../src/models/Post.js";
 import { Follow } from "../src/models/Follow.js";
 import { Like } from "../src/models/Like.js";
@@ -126,6 +127,44 @@ test("visitar perfil e forjar ID não permite agir como outro usuário", async (
   assert.equal(ownEdit.data.usuario, "test");
   assert.equal(ownEdit.data.email, undefined);
 });
+test("API de leituras valida entradas, protege autoria e recalcula avaliações no CRUD", async () => {
+  await Reading.init();
+  const book = await Book.create({ titulo: "REST", autor: "Autor", genero: "Teste", descricao: "Livro para testar a API" });
+  assert.equal((await request("/readings", { method: "POST", body: { livro: "invalido" } })).status, 400);
+  assert.equal((await request("/readings", { method: "POST", body: { livro: new mongoose.Types.ObjectId() } })).status, 404);
+  const created = await request("/readings", { method: "POST", body: { livro: book._id, status: "lendo", nota: 4 } });
+  assert.equal(created.status, 201);
+  const id = created.data._id;
+  const foreign = await Reading.create({ usuario: otherUser._id, livro: book._id, nota: 2 });
+  assert.equal((await request(`/readings/${id}`, { session: null })).status, 401);
+  assert.equal((await request(`/readings/${id}`)).data.livro.titulo, "REST");
+  assert.equal((await request("/readings/invalido")).status, 400);
+  assert.equal((await request(`/readings/${new mongoose.Types.ObjectId()}`)).status, 404);
+  for (const body of [{ nota: 6 }, { nota: "5" }, { status: "outro" }, {}]) {
+    assert.equal((await request(`/readings/${id}`, { method: "PATCH", body })).status, 400);
+  }
+  assert.equal((await request(`/readings/${foreign._id}`, { method: "PATCH", body: { nota: 5 } })).status, 404);
+  assert.equal((await request(`/readings/${foreign._id}`, { method: "DELETE" })).status, 404);
+  const updated = await request(`/readings/${id}`, { method: "PATCH", body: { status: "lido", nota: 5, usuario: otherUser._id, livro: foreign._id } });
+  assert.equal(updated.status, 200);
+  assert.equal(updated.data.status, "lido");
+  assert.equal(updated.data.usuario, created.data.usuario._id);
+  assert.equal(updated.data.livro._id, String(book._id));
+  assert.equal((await Book.findById(book._id)).mediaAvaliacoes, 3.5);
+  assert.equal((await request(`/readings/${id}`, { method: "PATCH", body: { nota: null } })).status, 200);
+  assert.equal((await Book.findById(book._id)).mediaAvaliacoes, 2);
+  const removed = await request(`/readings/${id}`, { method: "DELETE" });
+  assert.equal(removed.status, 204);
+  assert.equal(removed.data, "");
+  assert.equal((await request(`/readings/${id}`)).status, 404);
+  assert.equal((await Book.findById(book._id)).totalAvaliacoes, 1);
+  await Reading.deleteOne({ _id: foreign._id });
+  const again = await request("/readings", { method: "POST", body: { livro: book._id, nota: 3 } });
+  assert.equal((await request(`/readings/${again.data._id}`, { method: "DELETE" })).status, 204);
+  assert.equal((await Book.findById(book._id)).totalAvaliacoes, 0);
+  assert.equal((await Book.findById(book._id)).mediaAvaliacoes, 0);
+});
+
 test("feed e perfil mantêm curtida e comentários após recarregar", async () => {
   const findPost = response => response.data.find(item => item._id === post._id);
   assert.equal(findPost(await request("/posts")).curtido, true);

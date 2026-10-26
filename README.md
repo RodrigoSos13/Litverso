@@ -2,6 +2,11 @@
 
 Rede social literária para descobrir livros, organizar leituras e compartilhar resenhas e fanarts. Desenvolvida com React, Express e MongoDB.
 
+Para hospedar gratuitamente no Render com MongoDB Atlas, siga [o guia de publicação](docs/deploy-render.md).
+
+A API própria usa Express e Mongoose. Consulte [a documentação da API REST](docs/api-rest.md)
+para localizar o código, conhecer os endpoints de leituras e testar o CRUD no Postman.
+
 ## Rodar o sistema
 
 **Requisito:** Docker com Docker Compose (ou Docker Desktop). Não é necessário instalar Node.js ou MongoDB separadamente.
