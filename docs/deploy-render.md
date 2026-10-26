@@ -33,6 +33,11 @@ com mongodump/mongorestore e preserve as chaves de criptografia existentes.
 
 ## 3. Preparar os segredos e o envio de e-mail
 
+Para enviar usando o Gmail exclusivo do Litverso sem domínio próprio, siga
+[Gmail API por HTTPS](gmail-api.md). A configuração Resend abaixo é uma alternativa;
+com `EMAIL_PROVIDER=gmail`, RESEND_API_KEY e EMAIL_FROM não são usados pelo backend.
+No serviço Render existente, adicione as variáveis GMAIL_* em Environment.
+
 Para um banco novo, execute `openssl rand -hex 32` três vezes no terminal.
 Guarde cada resultado em um gerenciador de senhas: um para EMAIL_ENCRYPTION_KEY,
 outro para EMAIL_LOOKUP_KEY e outro para EMAIL_CODE_SECRET.

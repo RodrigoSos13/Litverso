@@ -19,6 +19,7 @@ __pycache__/
 *.pfx
 credentials.json
 service-account*.json
+client_secret*.json
 .aws/
 .ssh/
 .codex/

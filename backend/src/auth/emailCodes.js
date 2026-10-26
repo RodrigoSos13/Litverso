@@ -1,4 +1,5 @@
 import { protectedEmail } from "./emailPrivacy.js";
+import { emailTransportConfigured, sendEmail } from "../services/emailSender.js";
 import mongoose from "mongoose";
 import { createHash, createHmac, randomInt, timingSafeEqual } from "node:crypto";
 
@@ -15,7 +16,7 @@ export const EmailCode = mongoose.model("EmailCode", schema);
 const limitSchema = new mongoose.Schema({ key: { type: String, unique: true }, count: Number, expiresAt: { type: Date, expires: 0 } });
 export const AuthLimit = mongoose.model("AuthLimit", limitSchema);
 export function emailConfigured() {
-  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM && process.env.EMAIL_CODE_SECRET?.length >= 32);
+  return emailTransportConfigured() && Boolean(process.env.EMAIL_CODE_SECRET?.length >= 32);
 }
 function digest(value) {
   if (!emailConfigured()) throw new Error("EMAIL_NOT_CONFIGURED");
@@ -44,15 +45,11 @@ export async function issueCode(email, purpose, payload) {
     }, { upsert: true, new: true });
   } catch (error) { if (error.code === 11000) return; throw error; }
   try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST", signal: AbortSignal.timeout(10000),
-      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: process.env.EMAIL_FROM, to: [email],
-        subject: purpose === "register" ? "Confirme seu e-mail no litverso" : "Redefina sua senha no litverso",
-        text: `Seu código do litverso é: ${code}\n\nEle expira em 10 minutos e pode ser usado uma única vez. Não compartilhe este código. Se você não solicitou, ignore esta mensagem.`,
-      }),
+    await sendEmail({
+      to: email,
+      subject: purpose === "register" ? "Confirme seu e-mail no litverso" : "Redefina sua senha no litverso",
+      text: `Seu código do litverso é: ${code}\n\nEle expira em 10 minutos e pode ser usado uma única vez. Não compartilhe este código. Se você não solicitou, ignore esta mensagem.`,
     });
-    if (!response.ok) throw new Error("EMAIL_SEND_FAILED");
   } catch {
     await EmailCode.deleteOne({ _id: challenge._id, codeHash: challenge.codeHash });
     throw new Error("EMAIL_SEND_FAILED");

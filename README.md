@@ -67,9 +67,14 @@ Os dados ficam em um volume Docker e são preservados entre execuções.
 
 ### Confirmação de e-mail e recuperação de senha
 
+O envio pode usar **Gmail API por HTTPS/OAuth**, compatível com Render Free e sem
+domínio próprio, ou Resend. Para configurar o Gmail, siga [o passo a passo](docs/gmail-api.md),
+incluindo autorização da conta, token e variáveis no Render. Nenhuma senha de app
+é necessária. Sem `EMAIL_PROVIDER`, o provedor padrão continua sendo Resend.
+
 Novas contas são criadas somente após informar o código de 8 dígitos recebido por e-mail. Na tela de entrada, **Esqueci minha senha** envia um código para redefinir a senha; a alteração invalida todas as sessões anteriores. Contas antigas continuam acessíveis: não são marcadas automaticamente como verificadas. A recuperação por código também confirma o acesso ao e-mail dessas contas.
 
-Configure no `.env` da raiz (Docker) ou em `backend/.env` (execução direta):
+Para **Resend**, configure no `.env` da raiz (Docker) ou em `backend/.env` (execução direta):
 
 ```dotenv
 RESEND_API_KEY=<chave de envio do Resend>

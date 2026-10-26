@@ -28,6 +28,7 @@ async function request(path, { method = "GET", body, session = cookie, origin } 
   return { status: response.status, data: text && JSON.parse(text), cookie: response.headers.get("set-cookie") };
 }
 before(async () => {
+  process.env.EMAIL_PROVIDER = "resend";
   process.env.EMAIL_ENCRYPTION_KEY = "11".repeat(32);
   process.env.EMAIL_LOOKUP_KEY = "22".repeat(32);
   process.env.RESEND_API_KEY = "test-key";
@@ -599,6 +600,44 @@ test("migração protege contas antigas e cadastros pendentes sem alterar IDs ou
   const previous = process.env.EMAIL_LOOKUP_KEY;
   try { process.env.EMAIL_LOOKUP_KEY = "33".repeat(32); await assert.rejects(prepareEmailStorage()); }
   finally { process.env.EMAIL_LOOKUP_KEY = previous; }
+});
+
+test("Gmail HTTPS confirma cadastro, recupera senha e descarta código quando envio falha", async () => {
+  const originalFetch = globalThis.fetch;
+  const names = ["EMAIL_PROVIDER", "GMAIL_USER", "GMAIL_CLIENT_ID", "GMAIL_CLIENT_SECRET", "GMAIL_REFRESH_TOKEN"];
+  const previous = Object.fromEntries(names.map(name => [name, process.env[name]]));
+  Object.assign(process.env, { EMAIL_PROVIDER: "gmail", GMAIL_USER: "litverso@example.com", GMAIL_CLIENT_ID: "integration-client", GMAIL_CLIENT_SECRET: "integration-secret", GMAIL_REFRESH_TOKEN: "integration-refresh" });
+  let deliveredCode;
+  let fail = false;
+  globalThis.fetch = (url, options) => {
+    if (String(url) === "https://oauth2.googleapis.com/token") return Promise.resolve(Response.json({ access_token: "test-access", expires_in: 3600 }));
+    if (String(url) === "https://gmail.googleapis.com/gmail/v1/users/me/messages/send") {
+      if (fail) return Promise.resolve(Response.json({}, { status: 503 }));
+      const mime = Buffer.from(JSON.parse(options.body).raw, "base64url").toString("utf8");
+      const body = Buffer.from(mime.split("\r\n\r\n")[1], "base64").toString("utf8");
+      deliveredCode = body.match(/\d{8}/)[0];
+      return Promise.resolve(Response.json({ id: "gmail-sent" }));
+    }
+    return originalFetch(url, options);
+  };
+  try {
+    const email = "gmail-user@outlook.com";
+    const pending = await request("/auth/register", { method: "POST", body: { nome: "Gmail", usuario: "gmailuser", email, senha: password } });
+    assert.equal(pending.status, 202);
+    assert.ok(deliveredCode);
+    const verified = await request("/auth/verify-email", { method: "POST", body: { email, codigo: deliveredCode, registrationToken: pending.data.registrationToken } });
+    assert.equal(verified.status, 201);
+    assert.equal((await request("/auth/forgot-password", { method: "POST", body: { email } })).status, 202);
+    assert.equal((await request("/auth/reset-password", { method: "POST", body: { email, codigo: deliveredCode, senha: "New-gmail-password-123" } })).status, 200);
+    assert.equal((await request("/auth/me", { session: verified.cookie.split(";")[0] })).status, 401);
+    fail = true;
+    assert.equal((await request("/auth/register", { method: "POST", body: { nome: "Fail Gmail", usuario: "gmailfail", email: "gmail-fail@example.com", senha: password } })).status, 503);
+    assert.equal(await User.countDocuments({ usuario: "gmailfail" }), 0);
+    assert.equal(await EmailCode.countDocuments({ "payload.usuario": "gmailfail" }), 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+    for (const name of names) { if (previous[name] === undefined) delete process.env[name]; else process.env[name] = previous[name]; }
+  }
 });
 
 test("limite de tentativas bloqueia abuso da autenticação", async () => {
