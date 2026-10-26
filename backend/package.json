@@ -5,6 +5,8 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
+    "catalog:sync:atlas": "node scripts/sync-atlas-catalog.js",
+    "books:migrate": "node scripts/migrate-books.js",
     "db:start": "bash ./scripts/start-local-mongo.sh",
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
