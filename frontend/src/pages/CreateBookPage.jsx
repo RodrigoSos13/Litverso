@@ -106,7 +106,7 @@ export default function CreateBookPage() {
     try {
       const payload = {
         ...form,
-        titulo: form.titulo.trim(), autor: form.autor.trim(), genero: form.genero.trim(), descricao: form.descricao.trim(),
+        titulo: form.titulo.trim(), autor: form.autor.trim(), generos: form.genero.split(/[,;]/).map(value => value.trim()).filter(Boolean), descricao: form.descricao.trim(),
         editora: form.editora.trim(), isbn: form.isbn.trim(), urlCapa: cover.data,
         totalPaginas: form.totalPaginas ? Number(form.totalPaginas) : undefined,
         anoPublicacao: form.anoPublicacao ? Number(form.anoPublicacao) : undefined,
@@ -143,7 +143,7 @@ export default function CreateBookPage() {
             <div className="grid gap-5 sm:grid-cols-2">
               <Field label="Título" {...fieldProps("titulo")} required maxLength={500} placeholder="Ex.: O Hobbit" />
               <Field label="Autor ou autores" {...fieldProps("autor")} required maxLength={500} placeholder="Ex.: J. R. R. Tolkien" />
-              <Field label="Gênero" {...fieldProps("genero")} required maxLength={200} placeholder="Ex.: Fantasia" />
+              <Field label="Gêneros (separe por vírgula)" {...fieldProps("genero")} required maxLength={1000} placeholder="Ex.: Fantasia, Fantasia épica, Ficção" />
               <Field label="Idioma da edição" name="idioma" required><LanguageSelect value={form.idioma} onChange={handleChange} /></Field>
             </div>
             <div className="mt-5">

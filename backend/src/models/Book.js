@@ -1,3 +1,4 @@
+import { normalizeBookGenre } from "../services/bookGenres.js";
 import mongoose from "mongoose";
 import { catalogFields } from "../services/catalogFields.js";
 
@@ -23,8 +24,14 @@ const bookSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    generos: {
+      type: [String],
+      default: [],
+      validate: value => value.length <= 20 && value.every(item => item.trim().length > 0 && item.length <= 200),
+    },
     genero: {
       type: String,
+      set: normalizeBookGenre,
       required: true,
       trim: true,
     },
@@ -93,6 +100,7 @@ bookSchema.pre("findOneAndUpdate", function () {
   const metadata = update?.$set?.titulo ? update.$set : update?.$setOnInsert;
   if (metadata?.titulo && metadata?.autor) Object.assign(metadata, catalogFields(metadata));
 });
+bookSchema.index({ generos: 1 });
 bookSchema.index({ searchTokens: 1 });
 bookSchema.index({ titleTokens: 1 });
 bookSchema.index({ authorTokens: 1 });

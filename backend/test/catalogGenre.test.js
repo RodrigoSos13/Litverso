@@ -12,7 +12,7 @@ test("catálogo aplica gênero antes da paginação e combina com a busca", asyn
   });
   const res = response();
   await getCatalog({ query: { genre: "Fantasia", search: "magia", page: "2" } }, res);
-  assert.equal(filter.genero, "Fantasia");
+  assert.equal(filter.$or[0].generos, "Fantasia");
   assert.ok(Object.keys(filter).length > 2);
   assert.equal(res.data.page, 2);
 });
@@ -27,7 +27,7 @@ test("catálogo rejeita gênero inválido", async () => {
 
 test("lista os gêneros existentes sem entradas vazias", async t => {
   t.mock.method(Book, "distinct", async (field, filter) => {
-    assert.equal(field, "genero");
+    assert.ok(["genero", "generos"].includes(field));
     assert.ok(filter.idioma);
     return ["Romance", "", "Fantasia", " "];
   });

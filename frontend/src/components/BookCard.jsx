@@ -14,9 +14,9 @@ function BookCard({ book, onOpen, opening = false, disabled = false }) {
       </div>
       <div className="min-w-0">
       <div className="flex items-start justify-between gap-2">
-      <p className="min-w-0 line-clamp-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-copper">
-        {book.genero}
-      </p>
+      <div className="flex min-w-0 flex-wrap gap-1.5" aria-label="Gêneros">
+        {(book.generos?.length ? book.generos : [book.genero]).filter(Boolean).map(genre => <span key={genre} className="rounded-md bg-copper/10 px-2 py-1 text-[10px] font-semibold text-copper">{genre}</span>)}
+      </div>
       <span className="flex shrink-0 items-center gap-1.5 text-sm font-semibold text-white" aria-label={book.totalAvaliacoes > 0 ? `Avaliação média: ${book.mediaAvaliacoes} de 5, ${book.totalAvaliacoes} ${book.totalAvaliacoes === 1 ? "avaliação" : "avaliações"}` : "Sem avaliações"}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-copper" aria-hidden="true"><path d="m12 3 2.78 5.63L21 9.54l-4.5 4.39L17.56 20 12 17.08 6.44 20l1.06-6.07L3 9.54l6.22-.91L12 3Z" /></svg>
         {book.totalAvaliacoes > 0 && <span className="tabular-nums">{Number(book.mediaAvaliacoes || 0).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}</span>}

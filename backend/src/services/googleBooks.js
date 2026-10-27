@@ -1,3 +1,4 @@
+import { selectGoogleBookGenres } from "./bookGenres.js";
 import { matchesBookSearch, parseBookSearch } from "./bookSearch.js";
 const API_ROOT = "https://www.googleapis.com/books/v1/volumes";
 const PAGE_SIZE = 15;
@@ -39,11 +40,13 @@ export function normalizeVolume(volume) {
   const identifiers = Array.isArray(info.industryIdentifiers) ? info.industryIdentifiers : [];
   const isbn = identifiers.find(item => item.type === "ISBN_13") || identifiers.find(item => item.type === "ISBN_10");
   const year = /^\d{4}/.exec(info.publishedDate || "");
+  const generos = selectGoogleBookGenres(Array.isArray(info.categories) ? info.categories.map(category => plainText(category, 200)) : [], volume.id, { titulo: info.title, autor: info.authors?.join(", ") });
   return {
     googleBooksId: volume.id,
     titulo: plainText(info.title, 500),
     autor: Array.isArray(info.authors) ? info.authors.map(author => plainText(author, 200)).filter(Boolean).join(", ") || "Autor não informado" : "Autor não informado",
-    genero: Array.isArray(info.categories) ? plainText(info.categories[0], 200) || "Não informado" : "Não informado",
+    genero: generos[0],
+    generos,
     descricaoFormatada: typeof info.description === "string" ? info.description.slice(0, 20000) : "",
     descricao: plainText(info.description) || "Sinopse não disponível para esta edição.",
     urlCapa: httpsUrl(info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail),

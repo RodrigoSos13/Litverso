@@ -277,6 +277,23 @@ test("busca local aplica todos os termos antes de consultar e não retorna suges
   assert.deepEqual((await request("/books?search=autor%20inexistente")).data, []);
   assert.deepEqual((await request("/books?search=%25%25")).data, []);
 });
+test('cadastro com múltiplos gêneros aparece em cada filtro antes da paginação', async () => {
+  const created = await request('/books', { method: 'POST', body: {
+    titulo: 'Vários gêneros', autor: 'Autor Multi', generos: ['Fantasy', 'Fiction', 'Fantasia'],
+    descricao: 'Teste de múltiplos gêneros', isbn: '9780140328721', idioma: 'pt',
+  } });
+  assert.equal(created.status, 201);
+  assert.deepEqual(created.data.generos, ['Fantasia', 'Ficção']);
+  for (const genre of ['Fantasia', 'Ficção']) {
+    const catalog = await request(`/books/catalog?genre=${encodeURIComponent(genre)}&search=Vários`);
+    assert.equal(catalog.status, 200);
+    assert.ok(catalog.data.livros.some(book => book._id === created.data._id));
+  }
+  await Book.deleteOne({ _id: created.data._id });
+  const invalid = await request('/books', { method: 'POST', body: { generos: [null] } });
+  assert.equal(invalid.status, 400);
+});
+
 test("cadastro aceita capa enviada e idioma escolhido, e rejeita imagens inválidas", async () => {
   const urlCapa = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aQ1sAAAAASUVORK5CYII=";
   const body = { titulo: "Uploaded cover", autor: "Test author", genero: "Fantasy", descricao: "á".repeat(20000), idioma: "en", isbn: "9780261102217", urlCapa };
@@ -415,11 +432,13 @@ test("sincronização reutiliza IDs, preserva avaliações e evita duplicar ISBN
   const volume = { googleBooksId: "synced_volume", titulo: "Primeiro título", autor: "Autor Sync", genero: "Teste", descricao: "Descrição", idioma: "pt", isbn: "9781111111111", urlCapa: "https://example.com/first-cover.jpg" };
   assert.equal((await saveCatalogVolumes([volume])).inserted, 1);
   const stored = await Book.findOne({ googleBooksId: volume.googleBooksId });
-  await Book.updateOne({ _id: stored._id }, { $set: { mediaAvaliacoes: 4, totalAvaliacoes: 3 } });
+  await Book.updateOne({ _id: stored._id }, { $set: { mediaAvaliacoes: 4, totalAvaliacoes: 3, generos: ["Fantasia", "Ficção"] } });
   assert.equal((await saveCatalogVolumes([{ ...volume, titulo: "Título atualizado", urlCapa: "https://example.com/cover.jpg" }])).updated, 1);
   const updated = await Book.findById(stored._id);
   assert.equal(updated.mediaAvaliacoes, 4);
   assert.equal(updated.totalAvaliacoes, 3);
+  assert.ok(updated.generos.includes("Fantasia"));
+  assert.ok(updated.generos.includes("Ficção"));
   assert.equal(updated.titulo, "Título atualizado");
   assert.ok(updated.catalogHasCover);
   assert.equal(await Book.countDocuments({ googleBooksId: volume.googleBooksId }), 1);

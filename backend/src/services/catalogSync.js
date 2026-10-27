@@ -1,3 +1,4 @@
+import { normalizeBookGenres } from "./bookGenres.js";
 import { randomUUID } from "node:crypto";
 import mongoose from "mongoose";
 import { Book } from "../models/Book.js";
@@ -38,7 +39,8 @@ export async function saveCatalogVolumes(volumes) {
       ...(volume.isbn ? [{ isbnSearch: catalogFields(volume).isbnSearch }, { isbn: volume.isbn }] : []),
     ] }).lean();
     if (existing && existing.googleBooksId !== volume.googleBooksId) continue;
-    const fields = { ...volume, ...catalogFields(volume), catalogSyncedAt: new Date() };
+    const merged = { ...volume, generos: normalizeBookGenres([...(volume.generos?.length ? volume.generos : [volume.genero]), ...(existing?.generos || [])]) };
+    const fields = { ...merged, ...catalogFields(merged), catalogSyncedAt: new Date() };
     const result = await Book.updateOne({ googleBooksId: volume.googleBooksId }, { $set: fields }, { upsert: true, runValidators: true });
     inserted += result.upsertedCount;
     updated += result.matchedCount;

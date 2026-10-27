@@ -1,3 +1,4 @@
+import { normalizeBookGenres } from "../services/bookGenres.js";
 import { Like } from "../models/Like.js";
 import { Post } from "../models/Post.js";
 import { Reading } from "../models/Reading.js";
@@ -9,8 +10,15 @@ import { isValidIsbn, normalizeIsbn } from "../services/isbn.js";
 
 export async function createBook(req, res) {
   try {
-    const fields = ["titulo", "autor", "genero", "descricao", "urlCapa", "destaque", "totalPaginas", "editora", "anoPublicacao", "idioma", "isbn"];
+    const fields = ["titulo", "autor", "genero", "generos", "descricao", "urlCapa", "destaque", "totalPaginas", "editora", "anoPublicacao", "idioma", "isbn"];
     const payload = Object.fromEntries(fields.filter(key => req.body[key] !== undefined).map(key => [key, req.body[key]]));
+    if (payload.generos !== undefined) {
+      if (!Array.isArray(payload.generos) || !payload.generos.length || payload.generos.length > 20 || payload.generos.some(value => typeof value !== 'string' || !value.trim() || value.length > 200)) {
+        return res.status(400).json({ message: "Informe de 1 a 20 gêneros válidos, com até 200 caracteres cada." });
+      }
+      payload.generos = normalizeBookGenres(payload.generos);
+      payload.genero = payload.generos[0];
+    }
     if (!isValidIsbn(payload.isbn)) return res.status(400).json({ message: "Informe um ISBN válido de 10 ou 13 dígitos." });
     payload.isbn = normalizeIsbn(payload.isbn);
     if (await Book.exists({ isbnSearch: payload.isbn.toLowerCase() })) return res.status(409).json({ message: "Já existe um livro cadastrado com este ISBN." });
@@ -57,7 +65,7 @@ export async function getCatalog(req, res) {
     }
     const filter = { idioma: { $in: [/^pt(?:-(?:br|pt))?$/i, /^portugu[eê]s$/i, /^portuguese$/i, /^en(?:-[a-z]{2})?$/i, /^english$/i, /^ingl[eê]s$/i] } };
     if (search.trim()) Object.assign(filter, indexedBookSearchFilter(search));
-    if (genre.trim()) filter.genero = genre.trim();
+    if (genre.trim()) filter.$or = [{ generos: genre.trim() }, { genero: genre.trim(), "generos.0": { $exists: false } }];
     const pageSize = 16;
     const books = await Book.find(filter)
       .select("-searchTokens -titleTokens -authorTokens -isbnSearch -catalogVersion")
@@ -109,7 +117,12 @@ export async function getBookById(req, res) {
 
 export async function getGenres(_req, res) {
   try {
-    const genres = await Book.distinct("genero", { idioma: { $in: [/^pt(?:-(?:br|pt))?$/i, /^portugu[eê]s$/i, /^portuguese$/i, /^en(?:-[a-z]{2})?$/i, /^english$/i, /^ingl[eê]s$/i] } });
+    const languageFilter = { idioma: { $in: [/^pt(?:-(?:br|pt))?$/i, /^portugu[eê]s$/i, /^portuguese$/i, /^en(?:-[a-z]{2})?$/i, /^english$/i, /^ingl[eê]s$/i] } };
+    const [multiple, legacy] = await Promise.all([
+      Book.distinct("generos", languageFilter),
+      Book.distinct("genero", { ...languageFilter, "generos.0": { $exists: false } }),
+    ]);
+    const genres = [...new Set([...multiple, ...legacy])];
     res.json(genres.filter(value => typeof value === "string" && value.trim()).sort((a, b) => a.localeCompare(b, "pt-BR")));
   } catch {
     res.status(503).json({ message: "Não foi possível carregar os gêneros. Tente novamente." });

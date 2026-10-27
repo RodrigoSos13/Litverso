@@ -279,7 +279,7 @@ function BookPage() {
           <header className="book-detail-header">
             <div className="book-detail-title-row">
               <h1 className="book-detail-title">{data.livro.titulo}</h1>
-              <p className="book-detail-eyebrow">{data.livro.genero || "Literatura"}</p>
+              <div className="flex flex-wrap gap-2" aria-label="Gêneros">{(data.livro.generos?.length ? data.livro.generos : [data.livro.genero || "Literatura"]).map(genre => <span key={genre} className="rounded-lg bg-copper/10 px-3 py-1 text-xs font-semibold text-copper">{genre}</span>)}</div>
             </div>
             <p className="book-detail-author"><span>por</span> {data.livro.autor}</p>
           </header>
