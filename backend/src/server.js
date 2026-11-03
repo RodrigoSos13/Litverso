@@ -1,6 +1,7 @@
 import { prepareEmailStorage } from "./auth/migrateEmails.js";
 import dotenv from "dotenv";
 import { EmailCode, AuthLimit } from "./auth/emailCodes.js";
+import { Report } from "./models/Report.js";
 import { User } from "./models/User.js";
 import app from "./app.js";
 import { connectDatabase } from "./config/db.js";
@@ -15,7 +16,7 @@ connectDatabase()
   .then(async () => {
     const migrated = await prepareEmailStorage();
     console.log(`E-mails protegidos: ${migrated.users} contas, ${migrated.pending} cadastros pendentes.`);
-    await Promise.all([EmailCode.init(), AuthLimit.init(), User.init()]);
+    await Promise.all([EmailCode.init(), AuthLimit.init(), User.init(), Report.init()]);
     await prepareCatalog();
     app.listen(port, () => {
       console.log(`Server running on port ${port}`);

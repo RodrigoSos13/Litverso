@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import api from "../services/api";
 import PostCard from "../components/PostCard";
+import AdminPage from "./AdminPage";
 import CreatePostPage from "./CreatePostPage";
 import CommunitySidebar from "../components/CommunitySidebar";
 import CommunityPeople from "../components/CommunityPeople";
@@ -9,11 +10,12 @@ import BookCatalog from "../components/BookCatalog";
 import { useAuth } from "../contexts/AuthContext";
 
 function HomePage() {
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const { user, requireLogin } = useAuth();
-  const [activeTab, setActiveTab] = useState(() => params.get("tab") === "comunidade" ? 1 : 0);
+  const [activeTab, setActiveTab] = useState(() => params.get("tab") === "administracao" && user?.role === "admin" ? 2 : params.get("tab") === "comunidade" ? 1 : 0);
   const [composing, setComposing] = useState(() => Boolean(user) && params.get("compose") === "1");
   const [composerVersion, setComposerVersion] = useState(0);
+  const tabLabels = user?.role === "admin" ? ["Livros", "Comunidade", "Administração"] : ["Livros", "Comunidade"];
   const tabs = useRef([]);
   const composerDialog = useRef(null);
   const touch = useRef(null);
@@ -31,6 +33,9 @@ function HomePage() {
     return () => controller.abort();
   }, []);
 
+  useEffect(() => {
+    setActiveTab(params.get("tab") === "administracao" && user?.role === "admin" ? 2 : params.get("tab") === "comunidade" ? 1 : 0);
+  }, [params, user?.role]);
   useEffect(() => { if (search) setActiveTab(0); }, [search]);
   useEffect(() => { if (activeTab !== 1) setCommunitySearching(false); }, [activeTab]);
 
@@ -46,8 +51,12 @@ function HomePage() {
   }, [composing]);
 
   function selectTab(index, focus = false) {
-    const next = Math.max(0, Math.min(1, index));
+    const next = Math.max(0, Math.min(tabLabels.length - 1, index));
     setActiveTab(next);
+    const nextParams = new URLSearchParams(params);
+    nextParams.set("tab", ["livros", "comunidade", "administracao"][next]);
+    nextParams.delete("compose");
+    setParams(nextParams, { replace: true });
     if (focus) tabs.current[next]?.focus();
   }
 
@@ -89,14 +98,14 @@ function HomePage() {
           </div>
         </section>
 
-        <div role="tablist" aria-label="Explorar livros e comunidade" className="flex gap-8 border-b border-line" onKeyDown={event => {
-          const next = ["ArrowLeft", "ArrowRight"].includes(event.key) ? 1 - activeTab : event.key === "Home" ? 0 : event.key === "End" ? 1 : null;
+        <div role="tablist" aria-label="Seções do Litverso" className="flex gap-4 overflow-x-auto border-b border-line sm:gap-8" onKeyDown={event => {
+          const next = event.key === "ArrowRight" ? (activeTab + 1) % tabLabels.length : event.key === "ArrowLeft" ? (activeTab - 1 + tabLabels.length) % tabLabels.length : event.key === "Home" ? 0 : event.key === "End" ? tabLabels.length - 1 : null;
           if (next !== null) { event.preventDefault(); selectTab(next, true); }
         }}>
 
-          {["Livros", "Comunidade"].map((label, index) => <button key={label} ref={node => { tabs.current[index] = node; }} type="button" role="tab" id={`home-tab-${index}`} aria-controls={`home-panel-${index}`} aria-selected={activeTab === index} tabIndex={activeTab === index ? 0 : -1} onClick={() => selectTab(index)} className={`relative -mb-px flex min-h-12 items-center justify-center gap-2.5 border-b-2 px-1 py-3 text-sm font-semibold transition-colors ${activeTab === index ? "border-copper text-ink" : "border-transparent text-mist/70 hover:text-ink"}`}>
+          {tabLabels.map((label, index) => <button key={label} ref={node => { tabs.current[index] = node; }} type="button" role="tab" id={`home-tab-${index}`} aria-controls={`home-panel-${index}`} aria-selected={activeTab === index} tabIndex={activeTab === index ? 0 : -1} onClick={() => selectTab(index)} className={`relative -mb-px flex shrink-0 min-h-12 items-center justify-center gap-2.5 border-b-2 px-1 py-3 text-sm font-semibold transition-colors ${activeTab === index ? "border-copper text-ink" : "border-transparent text-mist/70 hover:text-ink"}`}>
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={`h-[18px] w-[18px] transition-colors ${activeTab === index ? "text-copper" : ""}`}>
-              {index === 0 ? <path d="M12 5v15M3 4c4-1 6 0 9 2 3-2 5-3 9-2v15c-4-1-6 0-9 2-3-2-5-3-9-2Z" /> : <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87" /><circle cx="9" cy="7" r="4" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>}
+              {index === 0 ? <path d="M12 5v15M3 4c4-1 6 0 9 2 3-2 5-3 9-2v15c-4-1-6 0-9 2-3-2-5-3-9-2Z" /> : index === 2 ? <><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z" /><path d="m8.5 12 2.5 2.5 4.5-5" /></> : <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87" /><circle cx="9" cy="7" r="4" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>}
             </svg>
             {label}
           </button>)}
@@ -105,7 +114,7 @@ function HomePage() {
           if (!touch.current) return;
           const dx = event.changedTouches[0].clientX - touch.current.x;
           const dy = event.changedTouches[0].clientY - touch.current.y;
-          if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) selectTab(activeTab + (dx < 0 ? 1 : -1));
+          if (!event.target.closest("input, textarea, select, button") && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) selectTab(activeTab + (dx < 0 ? 1 : -1));
           touch.current = null;
         }}>
           <div className="flex items-start transition-transform duration-300 ease-out" style={{ transform: `translateX(-${activeTab * 100}%)` }}>
@@ -135,6 +144,7 @@ function HomePage() {
           {activeTab === 1 && <CommunitySidebar currentUserId={currentUserId} postType={postType} onTypeChange={setPostType} onlyMine={onlyMine} onOnlyMineChange={setOnlyMine} />}
         </div>
             </section>
+            {user?.role === "admin" && <section role="tabpanel" id="home-panel-2" aria-labelledby="home-tab-2" hidden={activeTab !== 2} className="w-full min-w-0 shrink-0">{activeTab === 2 && <AdminPage />}</section>}
           </div>
         </div>
       </div>

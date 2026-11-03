@@ -25,6 +25,7 @@ function App() {
         <Route path="/users/:id/library" element={<UserLibraryPage />} />
         <Route path="/books/:id" element={<BookPage />} />
         <Route element={<ProtectedRoutes />}>
+        <Route path="/admin" element={<Navigate to="/?tab=administracao" replace />} />
         <Route path="/create-book" element={<CreateBookPage />} />
         <Route path="/create-post" element={<Navigate to="/?tab=comunidade&compose=1" replace />} />
         </Route>

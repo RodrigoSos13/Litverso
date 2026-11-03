@@ -2,12 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import api from "../services/api";
+import ReportButton from "./ReportButton";
 import PostText from "./PostText";
 import BookCover from "./BookCover";
 import { useAuth } from "../contexts/AuthContext";
 
 function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false, showBook = true, onPinned, onDeleted }) {
   const { requireLogin } = useAuth();
+  const [reportTarget, setReportTarget] = useState(null);
+  function openReport(tipo, alvo) {
+    setMenuOpen(false); setActiveCommentMenu(null);
+    if (requireLogin("denunciar conteúdo")) setReportTarget({ tipo, alvo });
+  }
   const [deleted, setDeleted] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [textExpanded, setTextExpanded] = useState(false);
@@ -236,19 +242,21 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
         </Link>
         <div className="flex shrink-0 items-center gap-2">
           <span className="rounded-full border border-forest/30 bg-forest/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-glow">{post.tipo}</span>
-          {isAuthor && <div ref={menu} className="relative" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setMenuOpen(false); }} onKeyDown={event => {
+          {<div ref={menu} className="relative" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setMenuOpen(false); }} onKeyDown={event => {
             if (event.key === "Escape") { setMenuOpen(false); menuTrigger.current?.focus(); }
           }}>
             <button ref={menuTrigger} type="button" aria-label="Opções da publicação" aria-expanded={menuOpen} aria-controls={`post-options-${post._id}`} onClick={() => setMenuOpen(current => !current)} className="flex h-9 w-9 items-center justify-center rounded-full text-mist hover:bg-panelSoft hover:text-ink">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" /></svg>
             </button>
             {menuOpen && <div id={`post-options-${post._id}`} className="absolute right-0 top-full z-40 mt-1 w-52 rounded-xl border border-line bg-panel p-1.5 shadow-card">
-              <button type="button" disabled={pinning} onClick={handlePin} className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-ink hover:bg-panelSoft disabled:opacity-50">{pinning ? "Salvando…" : pinned ? "Desfixar do perfil" : "Fixar no perfil"}</button>
-              <button type="button" onClick={() => { setMenuOpen(false); setConfirmDelete(true); }} className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-red-300 hover:bg-red-400/10">Apagar</button>
+              {isAuthor && <><button type="button" disabled={pinning} onClick={handlePin} className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-ink hover:bg-panelSoft disabled:opacity-50">{pinning ? "Salvando…" : pinned ? "Desfixar do perfil" : "Fixar no perfil"}</button>
+              <button type="button" onClick={() => { setMenuOpen(false); setConfirmDelete(true); }} className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-red-300 hover:bg-red-400/10">Apagar</button></>}
+              <button type="button" onClick={() => openReport("publicacao", post._id)} className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-red-300 hover:bg-red-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300">Denunciar</button>
             </div>}
           </div>}
         </div>
       </div>
+      {reportTarget?.tipo === "publicacao" && <ReportButton tipo="publicacao" alvo={post._id} onClose={() => { setReportTarget(null); menuTrigger.current?.focus(); }} />}
       {pinned && <p className="mt-3 text-xs text-copper">Fixado no perfil</p>}
 
       {confirmDelete && <div role="group" aria-label="Confirmar exclusão da publicação" className="mt-3 rounded-xl border border-red-400/20 bg-red-400/5 p-4">
@@ -317,17 +325,18 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
               <Link to={`/users/${comment.usuario?._id || comment.usuario}`} className="text-sm font-semibold text-ink transition hover:text-copper">{comment.usuario?.nome || "Leitor"}</Link>
               {comment.createdAt && <time dateTime={comment.createdAt} title={new Date(comment.createdAt).toLocaleString("pt-BR")} className="text-[11px] text-mist/60">{new Date(comment.createdAt).toLocaleDateString("pt-BR", { day: "numeric", month: "short" })}</time>}
             </div>
-            {isAuthor && <div className="relative -mt-1 shrink-0" ref={activeCommentMenu === comment._id ? commentMenuRef : undefined}>
+            {<div className="relative -mt-1 shrink-0" ref={activeCommentMenu === comment._id ? commentMenuRef : undefined}>
               <button type="button" aria-label={`Opções do comentário de ${comment.usuario?.nome || "Leitor"}`} aria-expanded={activeCommentMenu === comment._id} aria-controls={`comment-options-${comment._id}`} disabled={deletingComment}
                 onClick={event => { commentMenuTriggerRef.current = event.currentTarget; setActiveCommentMenu(current => current === comment._id ? null : comment._id); }}
                 className="flex h-8 w-8 items-center justify-center rounded-full text-mist/70 transition hover:bg-panelSoft hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper disabled:opacity-50">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5"><circle cx="5" cy="12" r="1.7" /><circle cx="12" cy="12" r="1.7" /><circle cx="19" cy="12" r="1.7" /></svg>
               </button>
               {activeCommentMenu === comment._id && <div id={`comment-options-${comment._id}`} className="absolute right-0 top-full z-30 mt-1 w-48 rounded-xl border border-line bg-panel p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
-                <button type="button" onClick={() => { setActiveCommentMenu(null); setCommentToDelete(comment._id); }} className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-red-300 transition hover:bg-red-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper">
+                {isAuthor && <button type="button" onClick={() => { setActiveCommentMenu(null); setCommentToDelete(comment._id); }} className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-red-300 transition hover:bg-red-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper">
                   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6M14 10v6" /></svg>
                   Apagar
-                </button>
+                </button>}
+                <button type="button" onClick={() => openReport("comentario", comment._id)} className="w-full rounded-lg px-3 py-2.5 text-left text-xs font-medium text-red-300 hover:bg-red-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300">Denunciar</button>
               </div>}
             </div>}
             </div>
@@ -338,6 +347,7 @@ function PostCard({ post, currentUserId, fullWidth = false, feedPreview = false,
               {comment.totalCurtidas > 0 && <span className="tabular-nums">· {comment.totalCurtidas}</span>}
             </button>
 
+            {reportTarget?.tipo === "comentario" && reportTarget.alvo === comment._id && <ReportButton key={comment._id} tipo="comentario" alvo={comment._id} onClose={() => { setReportTarget(null); commentMenuTriggerRef.current?.focus(); }} />}
             {isAuthor && commentToDelete === comment._id && <div role="group" aria-label="Confirmar exclusão do comentário" className="mt-2 rounded-xl border border-red-400/20 bg-red-400/5 p-3">
               <p className="text-xs text-ink">Apagar este comentário? Esta ação não pode ser desfeita.</p>
               <div className="mt-3 flex justify-end gap-2">

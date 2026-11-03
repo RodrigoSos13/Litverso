@@ -116,3 +116,15 @@ CATALOG_SYNC_ENABLED=false
 ```
 
 Aplique com `docker compose up -d catalog-sync`. O processo fica ocioso, sem consultar MongoDB ou Google Books, e a importação manual por `docker compose exec backend npm run catalog:sync -- "inauthor:Carl Sagan"` continua disponível. Para reativar, altere para `true` e execute novamente o comando do Compose. Na primeira atualização do código, use `docker compose up -d --build catalog-sync`. Alterações no `.env` exigem recriar o serviço com `up -d`; apenas `restart` não recarrega as variáveis.
+
+### Administração e denúncias
+
+Usuários autenticados podem denunciar publicações (incluindo fanarts, resenhas e citações) e comentários. Cada conta pode enviar uma denúncia por conteúdo. O painel `/admin`, disponível pela aba Administração ao lado de Livros e Comunidade, permite filtrar denúncias pendentes e concluídas, consultar o texto denunciado e a publicação com imagens, registrar uma observação e descartar a denúncia ou remover o conteúdo. A remoção de uma publicação também apaga seus comentários e curtidas. O histórico mantém o texto denunciado e a identificação do administrador responsável; denúncias não são expostas aos demais usuários.
+
+Para conceder acesso a uma conta existente, execute em `backend/` com o banco configurado:
+
+```bash
+npm run user:set-admin -- nome_do_usuario
+```
+
+Para revogar o acesso: `npm run user:set-admin -- nome_do_usuario user`. Atualize a página da conta após a alteração. Cadastro e edição de perfil não permitem alterar a função administrativa.

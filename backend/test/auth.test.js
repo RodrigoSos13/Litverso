@@ -665,3 +665,37 @@ test("limite de tentativas bloqueia abuso da autenticação", async () => {
   for (let index = 0; index < 21; index++) response = await request("/auth/login", { method: "POST", body: {} });
   assert.equal(response.status, 429);
 });
+
+test("denúncias protegem dados, privilégios e decisões pela API", async () => {
+  const { Report } = await import("../src/models/Report.js");
+  await Report.init();
+  const user = await User.create({ nome: "Reporter", usuario: "reportsecurity", email: "report-security@example.com" });
+  const token = "report-security-session";
+  await Session.create({ token: createHash("sha256").update(token).digest("hex"), user: user._id, expiresAt: new Date(Date.now() + 60000) });
+  const session = `litverse_session=${token}`;
+  const target = await Post.create({ usuario: user._id, tipo: "opiniao", texto: "Conteúdo para análise" });
+  assert.equal((await request("/reports", { session: "" })).status, 401);
+  assert.equal((await request("/reports", { session })).status, 403);
+  assert.equal((await request(`/users/${user._id}`, { method: "PUT", session, body: { role: "admin" } })).status, 200);
+  assert.equal((await User.findById(user._id)).role, "user");
+  const body = { tipo: "publicacao", alvo: String(target._id), motivo: "spam", status: "removida", denunciante: String(otherUser._id) };
+  assert.equal((await request("/reports", { method: "POST", session, body })).status, 201);
+  assert.equal((await request("/reports", { method: "POST", session, body })).status, 409);
+  const report = await Report.findOne({ alvo: target._id });
+  assert.equal(String(report.denunciante), String(user._id));
+  assert.equal(report.status, "pendente");
+  assert.equal((await request(`/reports/${report._id}`, { method: "PATCH", session, body: { acao: "remover" } })).status, 403);
+  await User.updateOne({ _id: user._id }, { $set: { role: "admin" } });
+  const list = await request("/reports", { session });
+  assert.equal(list.status, 200);
+  const item = list.data.items.find(item => item._id === String(report._id));
+  assert.ok(item);
+  assert.equal(item.denunciante.email, undefined);
+  assert.equal(item.denunciante.emailEncrypted, undefined);
+  assert.equal((await request(`/reports/${report._id}`, { method: "PATCH", session, body: { acao: "descartar", decisao: "Sem violação" } })).status, 200);
+  assert.ok(await Post.exists({ _id: target._id }));
+  assert.equal((await request("/reports", { session })).data.items.some(item => item._id === String(report._id)), false);
+  assert.equal((await request(`/reports/${report._id}`, { method: "PATCH", session, body: { acao: "remover" } })).status, 409);
+  await User.updateOne({ _id: user._id }, { $set: { role: "user" } });
+  assert.equal((await request("/reports", { session })).status, 403);
+});

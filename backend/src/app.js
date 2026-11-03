@@ -8,6 +8,7 @@ import bookRoutes from "./routes/bookRoutes.js";
 import readingRoutes from "./routes/readingRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
 import likeRoutes from "./routes/likeRoutes.js";
 
 import authRoutes from "./auth/routes.js";
@@ -50,6 +51,7 @@ app.use("/api", (req, res, next) => {
     if (req.method === "DELETE" && req.path.startsWith("/likes/") && req.path.split("/")[3] !== String(req.user._id)) return res.status(403).json({ message: "Você só pode remover suas próprias curtidas." });
     const resource = req.path.split("/")[1];
     const allowedFields = {
+      reports: ["tipo", "alvo", "motivo", "detalhes", "acao", "decisao"],
       posts: ["livro", "tipo", "texto", "urlImagem", "imagens", ...(req.method === "PATCH" ? ["fixadoNoPerfil"] : [])],
       comments: ["publicacao", "texto"],
       likes: ["publicacao"],
@@ -71,6 +73,7 @@ app.use("/api/readings", readingRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/likes", likeRoutes);
+app.use("/api/reports", reportRoutes);
 
 // Render runs the API and the compiled React app on the same origin.
 // Opt in explicitly so the separate frontend container keeps working.

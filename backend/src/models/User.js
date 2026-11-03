@@ -3,6 +3,7 @@ import { protectedEmail } from "../auth/emailPrivacy.js";
 
 const userSchema = new mongoose.Schema(
   {
+    role: { type: String, enum: ["user", "admin"], default: "user" },
     notificationsReadAt: { type: Date, select: false },
     passwordHash: { type: String, select: false },
     emailVerifiedAt: { type: Date, select: false },

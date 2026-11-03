@@ -16,7 +16,8 @@
     "test": "node --test test/*.test.js",
     "user:set-password": "node scripts/set-password.js",
     "synopses:refresh": "node scripts/refresh-synopses.js",
-    "catalog:sync": "node src/catalogWorker.js --once"
+    "catalog:sync": "node src/catalogWorker.js --once",
+    "user:set-admin": "node scripts/set-admin.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
