@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const SEND_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
+const oauthErrors = new Set(["invalid_grant", "invalid_client", "unauthorized_client", "invalid_request", "invalid_scope", "access_denied", "temporarily_unavailable", "server_error", "unsupported_grant_type"]);
 const address = value => typeof value === "string" && /^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/.test(value) && !/[\r\n]/.test(value);
 
 export function emailTransportConfigured(env = process.env) {
@@ -26,9 +27,23 @@ export function createEmailSender({ fetchImpl = (...args) => fetch(...args), con
         body: new URLSearchParams({ client_id: env.GMAIL_CLIENT_ID, client_secret: env.GMAIL_CLIENT_SECRET,
           refresh_token: env.GMAIL_REFRESH_TOKEN, grant_type: "refresh_token" }),
       });
-      if (!response.ok) throw new Error("GMAIL_AUTHORIZATION_FAILED");
-      const data = await response.json();
-      if (typeof data.access_token !== "string" || !data.access_token || !Number.isFinite(data.expires_in) || data.expires_in <= 0) throw new Error("GMAIL_AUTHORIZATION_FAILED");
+      // Only retain known error codes, never descriptions or arbitrary upstream content.
+      const failure = new Error("GMAIL_AUTHORIZATION_FAILED");
+      failure.httpStatus = response.status;
+      let data;
+      try { data = await response.json(); }
+      catch {
+        failure.oauthError = "invalid_response";
+        throw failure;
+      }
+      if (!response.ok) {
+        failure.oauthError = oauthErrors.has(data?.error) ? data.error : "unknown_oauth_error";
+        throw failure;
+      }
+      if (typeof data?.access_token !== "string" || !data.access_token || !Number.isFinite(data.expires_in) || data.expires_in <= 0) {
+        failure.oauthError = "invalid_token_response";
+        throw failure;
+      }
       if (credentials === identity) cached = { token: data.access_token, expires: now() + Math.max(0, data.expires_in - 60) * 1000 };
       return data.access_token;
     })();
@@ -94,7 +109,8 @@ export function createEmailSender({ fetchImpl = (...args) => fetch(...args), con
       const networkCodes = ["ETIMEDOUT", "ENETUNREACH", "ECONNRESET", "EAI_AGAIN", "ENOTFOUND", "UND_ERR_CONNECT_TIMEOUT"];
       const reason = ["TimeoutError", "AbortError"].includes(error.name) ? "timeout"
         : networkCodes.includes(error.cause?.code) ? error.cause.code : undefined;
-      console.error("[email] Falha no envio:", JSON.stringify({ provider: env.EMAIL_PROVIDER || "resend", stage, httpStatus, reason }));
+      console.error("[email] Falha no envio:", JSON.stringify({ provider: env.EMAIL_PROVIDER || "resend", stage,
+        httpStatus: error.httpStatus ?? httpStatus, oauthError: error.oauthError, reason }));
       throw new Error("EMAIL_SEND_FAILED");
     }
   };

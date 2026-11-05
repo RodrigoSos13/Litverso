@@ -145,3 +145,25 @@ test("Resend continua compatível quando Gmail não foi selecionado", async () =
   } });
   await send(message);
 });
+
+test("diagnóstico OAuth preserva status e códigos conhecidos sem vazar respostas ou credenciais", async t => {
+  const log = t.mock.method(console, "error", () => {});
+  for (const [response, status, oauthError] of [
+    [() => Response.json({ error: "invalid_grant", error_description: env.GMAIL_REFRESH_TOKEN }, { status: 400 }), 400, "invalid_grant"],
+    [() => Response.json({ error: "invalid_client" }, { status: 401 }), 401, "invalid_client"],
+    [() => Response.json({ error: env.GMAIL_CLIENT_SECRET }, { status: 403 }), 403, "unknown_oauth_error"],
+    [() => new Response(env.GMAIL_REFRESH_TOKEN, { status: 502 }), 502, "invalid_response"],
+    [() => Response.json(null), 200, "invalid_token_response"],
+    [() => Response.json({ access_token: "secret-access-token" }), 200, "invalid_token_response"],
+  ]) {
+    let calls = 0;
+    const send = createEmailSender({ config: () => env, fetchImpl: async () => { calls++; return response(); } });
+    await assert.rejects(send(message), { message: "EMAIL_SEND_FAILED" });
+    assert.equal(calls, 1, "não deve enviar mensagem se a renovação falhar");
+    const args = log.mock.calls.at(-1).arguments;
+    assert.deepEqual(JSON.parse(args[1]), { provider: "gmail", stage: "oauth-refresh", httpStatus: status, oauthError });
+    for (const secret of [env.GMAIL_CLIENT_SECRET, env.GMAIL_REFRESH_TOKEN, "secret-access-token", message.to, message.text]) {
+      assert.ok(!JSON.stringify(args).includes(secret));
+    }
+  }
+});
