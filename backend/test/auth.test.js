@@ -406,11 +406,17 @@ test("catálogo pagina e prioriza português e capas inteiramente no banco", asy
     assert.equal(first.status, 200);
     assert.equal(first.data.livros.length, 16);
     assert.equal(first.data.hasMore, true);
+    assert.equal(first.data.totalPages, 2);
+    assert.equal(first.data.total, 20);
     assert.ok(first.data.livros.every(book => book.idioma === "pt"));
     assert.ok(first.data.livros.slice(0, 5).every(book => book.urlCapa));
     assert.equal(first.data.livros[0].searchTokens, undefined);
     assert.equal(second.data.livros.length, 4);
     assert.equal(second.data.hasMore, false);
+    const last = await request("/books/catalog?search=Catalog%20Author&page=100");
+    assert.equal(last.data.page, 2);
+    assert.equal(last.data.totalPages, 2);
+    assert.equal(last.data.livros.length, 4);
     assert.equal(new Set([...first.data.livros, ...second.data.livros].map(book => book._id)).size, 20);
     assert.equal((await request("/books/catalog?search=inauthor:Cat&page=1")).data.livros.length, 16);
     assert.deepEqual((await request("/books/catalog?search=naoexiste")).data.livros, []);

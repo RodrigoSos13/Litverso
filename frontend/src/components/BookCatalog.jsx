@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useSearchParams } from "react-router-dom";
 import api from "../services/api";
 import BookCard from "./BookCard";
+import CatalogPagination from "./CatalogPagination";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function BookCatalog({ query = "", showSearchForm = false }) {
@@ -216,21 +217,7 @@ export default function BookCatalog({ query = "", showSearchForm = false }) {
       {loading && <p role="status" className="text-sm text-mist">Carregando livros…</p>}
       {searchEnabled && !loading && !error && books.length === 0 && <p className="rounded-2xl border border-dashed border-line p-5 text-mist">{genre ? "Nenhum livro encontrado com esse gênero e busca. Experimente limpar o filtro ou alterar a busca." : term ? "Nenhum livro encontrado no catálogo. Experimente outro título, autor ou ISBN." : "O catálogo ainda não tem livros. Você pode cadastrar sua primeira leitura."}</p>}
       <div className="grid gap-4 xl:grid-cols-2">{books.map(book => <BookCard key={book._id} book={book} />)}</div>
-      {visible && books.length > 0 && <nav aria-label="Páginas da busca de livros" className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-t border-line pt-6 sm:gap-6">
-        <div className="flex justify-end">
-          {page > 1 && <button type="button" disabled={loading} onClick={() => requestPage(page - 1)} className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-line bg-panel px-3 py-2.5 text-sm font-semibold text-mist transition hover:border-copper/50 hover:bg-panelSoft hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper focus-visible:ring-offset-2 focus-visible:ring-offset-midnight disabled:pointer-events-none disabled:opacity-40 sm:px-5">
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 transition-transform motion-safe:group-hover:-translate-x-0.5"><path d="m14 6-6 6 6 6" /></svg>
-            Anterior
-          </button>}
-        </div>
-        <span aria-current="page" className="flex flex-col items-center gap-0.5 px-1 text-xs text-mist sm:px-3">Página<span className="text-base font-semibold tabular-nums text-white">{page}</span></span>
-        <div className="flex justify-start">
-          <button type="button" disabled={loading || !visible.hasMore} onClick={() => requestPage(page + 1)} className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-line bg-panel px-3 py-2.5 text-sm font-semibold text-mist transition hover:border-copper/50 hover:bg-panelSoft hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper focus-visible:ring-offset-2 focus-visible:ring-offset-midnight disabled:pointer-events-none disabled:opacity-40 sm:px-5">
-            Próxima
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 transition-transform motion-safe:group-hover:translate-x-0.5"><path d="m10 6 6 6-6 6" /></svg>
-          </button>
-        </div>
-      </nav>}
+      {visible && books.length > 0 && <CatalogPagination page={page} totalPages={visible.totalPages || 1} loading={loading} onPageChange={requestPage} />}
     </section>
   );
 }

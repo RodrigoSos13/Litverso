@@ -94,6 +94,8 @@ test("paginação mantém a ordem do snapshot e aplica gênero antes de fatiar",
   await getCatalog({ query: { seed: "visit-one", genre: "Fantasia", page: "2" }, user: { _id: "owner" } }, response);
   assert.deepEqual(response.data.livros.map(b => b._id), ids.slice(16, 32));
   assert.equal(response.data.hasMore, true);
+  assert.equal(response.data.totalPages, 3);
+  assert.equal(response.data.total, 35);
 });
 
 test("rejeita sementes inválidas antes de consultar recomendações", async () => {

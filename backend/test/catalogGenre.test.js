@@ -6,6 +6,7 @@ const response = () => ({ status(code) { this.code = code; return this; }, json(
 
 test("catálogo aplica gênero antes da paginação e combina com a busca", async t => {
   let filter;
+  t.mock.method(Book, "countDocuments", async value => { assert.equal(value.$or[0].generos, "Fantasia"); return 40; });
   t.mock.method(Book, "find", value => {
     filter = value;
     return { select() { return this; }, sort() { return this; }, skip(value) { assert.equal(value, 16); return this; }, limit() { return this; }, lean: async () => [] };
@@ -15,6 +16,8 @@ test("catálogo aplica gênero antes da paginação e combina com a busca", asyn
   assert.equal(filter.$or[0].generos, "Fantasia");
   assert.ok(Object.keys(filter).length > 2);
   assert.equal(res.data.page, 2);
+  assert.equal(res.data.totalPages, 3);
+  assert.equal(res.data.total, 40);
 });
 
 test("catálogo rejeita gênero inválido", async () => {

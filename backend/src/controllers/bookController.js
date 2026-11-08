@@ -75,17 +75,22 @@ export async function getCatalog(req, res) {
       const matches = await Book.find({ ...filter, _id: { $in: order.books } }).select("_id").lean();
       const eligible = new Set(matches.map(book => String(book._id)));
       const ordered = order.books.filter(id => eligible.has(String(id)));
-      const offset = (page - 1) * pageSize;
+      const totalPages = Math.ceil(ordered.length / pageSize);
+      const currentPage = Math.min(page, Math.max(1, totalPages));
+      const offset = (currentPage - 1) * pageSize;
       const ids = ordered.slice(offset, offset + pageSize);
       const books = await Book.find({ _id: { $in: ids } }).select("-searchTokens -titleTokens -authorTokens -isbnSearch -catalogVersion").lean();
       const byId = new Map(books.map(book => [String(book._id), book]));
-      return res.json({ livros: ids.map(id => byId.get(String(id))).filter(Boolean), page, hasMore: ordered.length > offset + pageSize, personalized: order.personalized });
+      return res.json({ livros: ids.map(id => byId.get(String(id))).filter(Boolean), page: currentPage, totalPages, total: ordered.length, hasMore: currentPage < totalPages, personalized: order.personalized });
     }
+    const total = await Book.countDocuments(filter);
+    const totalPages = Math.ceil(total / pageSize);
+    const currentPage = Math.min(page, Math.max(1, totalPages));
     const books = await Book.find(filter)
       .select("-searchTokens -titleTokens -authorTokens -isbnSearch -catalogVersion")
       .sort({ catalogLanguageRank: 1, catalogHasCover: -1, _id: 1 })
-      .skip((page - 1) * pageSize).limit(pageSize + 1).lean();
-    res.json({ livros: books.slice(0, pageSize), page, hasMore: books.length > pageSize });
+      .skip((currentPage - 1) * pageSize).limit(pageSize).lean();
+    res.json({ livros: books, page: currentPage, totalPages, total, hasMore: currentPage < totalPages });
   } catch {
     res.status(503).json({ message: "Não foi possível consultar o catálogo. Tente novamente." });
   }
