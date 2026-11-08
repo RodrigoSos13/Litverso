@@ -11,7 +11,7 @@ const postTypes = [
   { value: "citacao", label: "Citação", hint: "Dê um novo lugar àquelas palavras que ficaram com você.", placeholder: "Compartilhe um trecho marcante e lembre de citar a autoria…" },
 ];
 
-export default function CreatePostPage({ embedded = false, onPublished, onCancel }) {
+export default function CreatePostPage({ embedded = false, onPublished, onCancel, fixedBook = null }) {
   const [tipo, setTipo] = useState("opiniao");
   const [texto, setTexto] = useState("");
   const [livro, setLivro] = useState(null);
@@ -128,7 +128,7 @@ export default function CreatePostPage({ embedded = false, onPublished, onCancel
     setBusy(true);
     setError("");
     try {
-      const { data } = await api.post("/posts", { tipo, texto: texto.trim(), livro: livro?._id || null, usuario: currentUserId, imagens: tipo === "citacao" ? [] : images.map(image => image.data) }, { timeout: 30000 });
+      const { data } = await api.post("/posts", { tipo, texto: texto.trim(), livro: fixedBook?._id || livro?._id || null, usuario: currentUserId, imagens: tipo === "citacao" ? [] : images.map(image => image.data) }, { timeout: 30000 });
       if (onPublished) onPublished(data);
       else navigate("/");
     } catch (failure) {
@@ -211,7 +211,7 @@ export default function CreatePostPage({ embedded = false, onPublished, onCancel
             {reading && <span role="status" className="sr-only">Preparando imagens</span>}
           </div>}
 
-          <div className="mt-2">
+          {!fixedBook && <div className="mt-2">
             {!livro && <button type="button" aria-expanded={showBookSearch} aria-controls="post-book-search" onClick={() => setShowBookSearch(current => !current)} className="inline-flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-copper transition hover:bg-copper/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5"><path d="M12 5v15M3 4c4-1 6 0 9 2 3-2 5-3 9-2v15c-4-1-6 0-9 2-3-2-5-3-9-2Z" /></svg>
               Vincular livro <span className="text-xs text-mist/60">Opcional</span>
@@ -226,7 +226,7 @@ export default function CreatePostPage({ embedded = false, onPublished, onCancel
               </div>
             ) : <SearchBar placement="top" inputId="livro" onSelect={setLivro} disabled={busy} className="relative w-full" />}
             </div>
-          </div>
+          </div>}
         </fieldset>
         <footer className="flex flex-wrap items-center justify-end gap-3 border-t border-line px-5 py-4 sm:px-6">
           {!currentUserId && <p className="mr-auto text-xs text-mist">Entre na sua conta para publicar.</p>}

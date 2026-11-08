@@ -6,6 +6,7 @@ import BookCover from "../components/BookCover";
 import StarRating from "../components/StarRating";
 import PostCard from "../components/PostCard";
 import FanartComposer from "../components/FanartComposer";
+import BookPostComposer from "../components/BookPostComposer";
 import { useAuth } from "../contexts/AuthContext";
 
 const initialReadingForm = {
@@ -54,14 +55,18 @@ function BookPage() {
     };
   }, [activeReadingMenu]);
 
-  function loadBookPage() {
-    return api.get(`/books/${id}`).then((response) => setData(response.data));
+  function loadBookPage(signal) {
+    return api.get(`/books/${id}`, { signal }).then((response) => {
+      if (!signal?.aborted) setData(response.data);
+    });
   }
 
   useEffect(() => {
     setExpandedDescription(false);
     setActiveSection("community");
-    loadBookPage().catch(console.error);
+    const controller = new AbortController();
+    loadBookPage(controller.signal).catch(error => { if (!controller.signal.aborted) console.error(error); });
+    return () => controller.abort();
   }, [id]);
 
   useEffect(() => {
@@ -96,7 +101,7 @@ function BookPage() {
     return () => controller.abort();
   }, [currentUserId, id]);
 
-  if (!data) {
+  if (!data || String(data.livro._id) !== id) {
     return <p>Carregando livro...</p>;
   }
 
@@ -104,7 +109,7 @@ function BookPage() {
     accumulator[item._id] = item.count;
     return accumulator;
   }, {});
-  const communityPosts = data.posts.filter((post) => post.tipo === "resenha" || post.tipo === "citacao");
+  const communityPosts = data.posts.filter((post) => ["opiniao", "resenha", "citacao"].includes(post.tipo));
   const fanarts = data.posts.filter((post) => post.tipo === "fanart");
 
   async function handleRatingSubmit(event) {
@@ -318,7 +323,7 @@ function BookPage() {
       </section>
 
       <section aria-label="Publicações sobre o livro">
-        <div role="tablist" aria-label="Publicações sobre o livro" className="mb-6 flex gap-8 border-b border-line" onKeyDown={event => {
+        <div role="tablist" aria-label="Publicações sobre o livro" className="mb-6 flex min-w-0 gap-5 border-b border-line sm:gap-8" onKeyDown={event => {
           const keys = ["community", "fanarts"];
           const next = ["ArrowLeft", "ArrowRight"].includes(event.key) ? (activeSection === "community" ? 1 : 0) : event.key === "Home" ? 0 : event.key === "End" ? 1 : null;
           if (next !== null) {
@@ -345,13 +350,19 @@ function BookPage() {
         <div role="tabpanel" id={`book-panel-${activeSection}`} aria-labelledby={`book-tab-${activeSection}`} tabIndex={0} className="min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-copper">
         {activeSection === "community" ? (
           <>
+            <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+              <h2 className="font-display text-3xl">Publicações deste livro</h2>
+              <span className="text-sm text-mist">{communityPosts.length} publicações</span>
+            </div>
+            <div className="mb-5">
+              <BookPostComposer key={id} book={data.livro} onPublished={post => setData(current => current?.livro._id === post.livro?._id ? { ...current, posts: [post, ...current.posts] } : current)} />
+            </div>
             <div className="mx-auto flex w-full min-w-0 max-w-4xl flex-col gap-6 pb-8 sm:gap-8">
-              <h2 className="sr-only">Resenhas e citações</h2>
               {communityPosts.map(post => (
                 <PostCard key={post._id} post={post} currentUserId={currentUserId} fullWidth feedPreview showBook={false}
                   onDeleted={postId => setData(current => ({ ...current, posts: current.posts.filter(item => item._id !== postId) }))} />
               ))}
-              {communityPosts.length === 0 && <p className="py-6 text-sm text-mist">Ainda não há resenhas ou citações deste livro.</p>}
+              {communityPosts.length === 0 && <p className="py-6 text-sm text-mist">Ainda não há publicações sobre este livro.</p>}
             </div>
           </>
         ) : (
