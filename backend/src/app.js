@@ -57,7 +57,7 @@ app.use("/api", (req, res, next) => {
       likes: ["publicacao"],
       readings: ["livro", "status", "nota"],
       users: ["nome", "biografia", "urlAvatar"],
-      books: ["titulo", "autor", "genero", "generos", "descricao", "urlCapa", "destaque", "totalPaginas", "editora", "anoPublicacao", "idioma", "isbn", "googleBooksId"],
+      books: ["titulo", "autor", "genero", "generos", "descricao", "urlCapa", "destaque", "totalPaginas", "editora", "anoPublicacao", "idioma", "isbn", "googleBooksId", ...(req.path === "/books/interests" ? ["search", "enabled"] : [])],
     }[resource] || [];
     req.body = Object.fromEntries(allowedFields.filter(key => req.body?.[key] !== undefined).map(key => [key, req.body[key]]));
     req.body.usuario = req.user._id;

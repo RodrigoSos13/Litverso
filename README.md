@@ -28,6 +28,25 @@ para todas as alterações.
 
 O modo de desenvolvimento atualiza a interface e reinicia o backend ao salvar alterações no código. Após mudar dependências ou Dockerfiles, execute novamente o comando acima.
 
+## Recomendações no catálogo
+
+O catálogo varia a seleção em cada visita. Para contas autenticadas, combina
+autores e gêneros das leituras, avaliações, pesquisas recentes e interesses dos
+leitores que a pessoa segue. Livros já lidos perdem prioridade, e a ordenação
+inclui variedade de autores e novas descobertas. A busca por título, autor ou
+ISBN continua usando seus filtros habituais.
+
+As preferências de pesquisa são gerenciadas pela API autenticada
+`/api/books/interests`: `PUT` com `{ "enabled": false }` desativa o uso das pesquisas
+e apaga o histórico; `DELETE` apaga somente o histórico. O perfil guarda até 20 pesquisas, usa apenas as dos últimos
+90 dias e não expõe esses termos a outros usuários. Desativar também apaga o
+histórico; as listas e avaliações continuam contribuindo para as sugestões.
+
+Cada visita autenticada mantém sua ordem por até uma hora em um snapshot com
+expiração automática no MongoDB, inclusive entre instâncias da API. Uma nova visita
+inicia uma nova seleção. Não depende de serviços externos
+nem exige recalcular o catálogo ou alterar os livros existentes.
+
 ## Importar livros (opcional)
 
 Copie o arquivo de configuração, caso ainda não tenha um `.env`:

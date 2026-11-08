@@ -1,4 +1,3 @@
-// Inline styles and tables support email clients without remote assets or scripts.
 export function authEmailTemplate({ code, purpose, preview = false }) {
   if (!/^\d{8}$/.test(code) || !["register", "reset"].includes(purpose)) throw new Error("INVALID_AUTH_EMAIL");
   const registering = purpose === "register";

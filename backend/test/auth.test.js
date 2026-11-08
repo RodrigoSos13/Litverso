@@ -17,6 +17,7 @@ import { Comment } from "../src/models/Comment.js";
 import { User } from "../src/models/User.js";
 import { EmailCode, AuthLimit } from "../src/auth/emailCodes.js";
 import { Session } from "../src/auth/session.js";
+import { RecommendationProfile, RecommendationSnapshot } from "../src/models/Recommendation.js";
 import { hashPassword, verifyPassword } from "../src/auth/password.js";
 let mongo, directory, server, base, cookie, otherUser, post;
 const delivered = new Map();
@@ -417,6 +418,52 @@ test("catálogo pagina e prioriza português e capas inteiramente no banco", asy
     assert.equal((await request("/books/catalog?page=1.5")).status, 400);
     assert.equal((await request("/books/catalog", { session: null })).status, 200);
   } finally { globalThis.fetch = originalFetch; }
+});
+
+test("recomendações mantêm páginas estáveis, isolam contas e respeitam preferências de pesquisa", async () => {
+  const account = await User.create({ nome: "Recomendações", usuario: "recommendations", email: "recommendations@example.com" });
+  const token = "recommendations-test-session";
+  await Session.create({ token: createHash("sha256").update(token).digest("hex"), user: account._id, expiresAt: new Date(Date.now() + 60000) });
+  const session = `litverse_session=${token}`;
+  const path = "/books/catalog?seed=integration-visit";
+  await RecommendationSnapshot.init();
+  assert.equal((await request("/books/interests", { session: null })).status, 401);
+  assert.equal((await request("/books/interests", { method: "DELETE", session: null })).status, 401);
+  assert.equal((await request("/books/interests", { method: "POST", session: null, body: { search: "Catalog" } })).status, 401);
+  assert.deepEqual((await request("/books/interests", { session })).data, { enabled: true });
+  for (let i = 0; i < 22; i++) assert.equal((await request("/books/interests", { method: "POST", session, body: { search: `Catalog ${i}`, usuario: otherUser._id } })).status, 200);
+  let profile = await RecommendationProfile.findById(account._id).lean();
+  assert.equal(profile.searches.length, 20);
+  assert.equal(profile.searches[0].term, "Catalog 2");
+  const first = await request(path, { session });
+  assert.equal(first.status, 200);
+  assert.equal(first.data.personalized, true);
+  const second = await request(`${path}&page=2`, { session });
+  assert.equal(second.status, 200);
+  assert.equal(new Set([...first.data.livros, ...second.data.livros].map(b => b._id)).size, first.data.livros.length + second.data.livros.length);
+  // New signals do not change the in-progress visit's pagination.
+  await request("/books/interests", { method: "POST", session, body: { search: "Outro autor" } });
+  assert.deepEqual((await request(path, { session })).data, first.data);
+  assert.ok(await RecommendationSnapshot.exists({ _id: `${account._id}:integration-visit` }));
+  const guest = await request(path, { session: null });
+  assert.equal(guest.status, 200);
+  assert.equal(guest.data.personalized, false);
+  assert.equal((await request("/books/interests", { method: "PUT", session, body: { enabled: false } })).status, 200);
+  assert.equal(await RecommendationSnapshot.countDocuments({ usuario: account._id }), 0);
+  await request("/books/interests", { method: "POST", session, body: { search: "Não guardar" } });
+  profile = await RecommendationProfile.findById(account._id).lean();
+  assert.equal(profile.enabled, false);
+  assert.deepEqual(profile.searches, []);
+  assert.equal((await request("/books/interests", { method: "PUT", session, body: { enabled: true } })).status, 200);
+  await request("/books/interests", { method: "POST", session, body: { search: "Tolkien" } });
+  assert.equal((await RecommendationProfile.findById(account._id)).searches.length, 1);
+  assert.equal((await request("/books/interests", { method: "DELETE", session })).status, 200);
+  assert.equal((await RecommendationProfile.findById(account._id)).searches.length, 0);
+  // Expired snapshots are rebuilt even before Mongo's TTL cleanup runs.
+  await RecommendationSnapshot.create({ _id: `${account._id}:expired-visit`, usuario: account._id, books: [], expiresAt: new Date(0) });
+  const rebuilt = await request("/books/catalog?seed=expired-visit", { session });
+  assert.equal(rebuilt.status, 200);
+  assert.ok(rebuilt.data.livros.length > 0);
 });
 
 test("migração torna livros antigos pesquisáveis sem mudar IDs e avaliações", async () => {

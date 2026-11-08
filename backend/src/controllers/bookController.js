@@ -7,6 +7,7 @@ import { isPortuguese, isSupportedLanguage } from "../services/googleBooks.js";
 import { indexedBookSearchFilter, localBookSearchFilter } from "../services/bookSearch.js";
 import { validateUploadedImage } from "../services/uploadedImage.js";
 import { isValidIsbn, normalizeIsbn } from "../services/isbn.js";
+import { recommendationOrder } from "../services/recommendations.js";
 
 export async function createBook(req, res) {
   try {
@@ -67,6 +68,19 @@ export async function getCatalog(req, res) {
     if (search.trim()) Object.assign(filter, indexedBookSearchFilter(search));
     if (genre.trim()) filter.$or = [{ generos: genre.trim() }, { genero: genre.trim(), "generos.0": { $exists: false } }];
     const pageSize = 16;
+    const seed = req.query.seed;
+    if (seed !== undefined && (typeof seed !== "string" || !/^[a-zA-Z0-9-]{8,80}$/.test(seed))) return res.status(400).json({ message: "Sessão de recomendações inválida." });
+    if (!search.trim() && seed) {
+      const order = await recommendationOrder({ userId: req.user?._id, seed, languageFilter: { idioma: filter.idioma } });
+      const matches = await Book.find({ ...filter, _id: { $in: order.books } }).select("_id").lean();
+      const eligible = new Set(matches.map(book => String(book._id)));
+      const ordered = order.books.filter(id => eligible.has(String(id)));
+      const offset = (page - 1) * pageSize;
+      const ids = ordered.slice(offset, offset + pageSize);
+      const books = await Book.find({ _id: { $in: ids } }).select("-searchTokens -titleTokens -authorTokens -isbnSearch -catalogVersion").lean();
+      const byId = new Map(books.map(book => [String(book._id), book]));
+      return res.json({ livros: ids.map(id => byId.get(String(id))).filter(Boolean), page, hasMore: ordered.length > offset + pageSize, personalized: order.personalized });
+    }
     const books = await Book.find(filter)
       .select("-searchTokens -titleTokens -authorTokens -isbnSearch -catalogVersion")
       .sort({ catalogLanguageRank: 1, catalogHasCover: -1, _id: 1 })

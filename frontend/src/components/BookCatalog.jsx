@@ -1,9 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams } from "react-router-dom";
 import api from "../services/api";
 import BookCard from "./BookCard";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function BookCatalog({ query = "", showSearchForm = false }) {
+  const { user } = useAuth();
+  const seed = useMemo(() => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`, [user?._id]);
+  const [searchHistoryEnabled, setSearchHistoryEnabled] = useState(null);
   const [params, setParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [genres, setGenres] = useState([]);
@@ -18,15 +23,37 @@ export default function BookCatalog({ query = "", showSearchForm = false }) {
   const sectionRef = useRef(null);
   const filterRef = useRef(null);
   const filterButtonRef = useRef(null);
+  const filterMenuRef = useRef(null);
+  const [filterPosition, setFilterPosition] = useState(null);
   const term = (showSearchForm ? params.get("search") || "" : query).trim();
   const searchEnabled = !showSearchForm || Boolean(term);
   const pageParam = Number(params.get("page") || 1);
   const requestedPage = Number.isSafeInteger(pageParam) && pageParam > 0 ? pageParam : 1;
-  const visible = searchEnabled && snapshot?.term === term && snapshot?.genre === genre ? snapshot : null;
+  const visible = searchEnabled && snapshot?.seed === seed && snapshot?.term === term && snapshot?.genre === genre ? snapshot : null;
   const books = visible?.livros || [];
   const page = visible?.page || 1;
-  const loading = searchEnabled && (!status || status.term !== term || status.genre !== genre || status.page !== requestedPage || status.loading);
-  const error = searchEnabled && status?.term === term && status?.genre === genre ? status.error : "";
+  const loading = searchEnabled && (!status || status.seed !== seed || status.term !== term || status.genre !== genre || status.page !== requestedPage || status.loading);
+  const error = searchEnabled && status?.seed === seed && status?.term === term && status?.genre === genre ? status.error : "";
+
+  useEffect(() => {
+    setSearchHistoryEnabled(null);
+    if (!user || showSearchForm) return;
+    const controller = new AbortController();
+    api.get("/books/interests", { signal: controller.signal }).then(({ data }) => {
+      if (!controller.signal.aborted) setSearchHistoryEnabled(data.enabled);
+    }).catch(() => {});
+    return () => controller.abort();
+  }, [user?._id, showSearchForm]);
+
+  useEffect(() => {
+    if (!user || showSearchForm || !searchHistoryEnabled || term.length < 3 || requestedPage !== 1) return;
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      if (controller.signal.aborted) return;
+      api.post("/books/interests", { search: term }, { signal: controller.signal }).catch(() => {});
+    }, 1500);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [term, user?._id, searchHistoryEnabled, showSearchForm, requestedPage]);
 
   useEffect(() => {
     if (showSearchForm) setDraft(term);
@@ -35,11 +62,11 @@ export default function BookCatalog({ query = "", showSearchForm = false }) {
   useEffect(() => {
     if (!searchEnabled) return;
     const controller = new AbortController();
-    setStatus({ term, genre, page: requestedPage, loading: true, error: "" });
+    setStatus({ term, genre, seed, page: requestedPage, loading: true, error: "" });
     const timer = setTimeout(async () => {
       try {
         const { data } = await api.get("/books/catalog", {
-          params: { ...(genre ? { genre } : {}), ...(term ? { search: term } : {}), page: requestedPage },
+          params: { ...(genre ? { genre } : {}), ...(term ? { search: term } : { seed }), page: requestedPage },
           signal: controller.signal,
           timeout: 10000,
         });
@@ -48,18 +75,18 @@ export default function BookCatalog({ query = "", showSearchForm = false }) {
         if (requestedPage > 1 && !data.livros.length && visible) {
           setSnapshot({ ...visible, hasMore: false });
         } else {
-          setSnapshot({ ...data, term, genre });
+          setSnapshot({ ...data, term, genre, seed });
           if (visible && visible.page !== data.page) requestAnimationFrame(() => {
             if (!controller.signal.aborted) sectionRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
           });
         }
-        setStatus({ term, genre, page: requestedPage, loading: false, error: "" });
+        setStatus({ term, genre, seed, page: requestedPage, loading: false, error: "" });
       } catch (err) {
-        if (!controller.signal.aborted) setStatus({ term, genre, page: requestedPage, loading: false, error: err.response?.data?.message || "Não foi possível carregar os livros. Tente novamente." });
+        if (!controller.signal.aborted) setStatus({ term, genre, seed, page: requestedPage, loading: false, error: err.response?.data?.message || "Não foi possível carregar os livros. Tente novamente." });
       }
     }, requestedPage === 1 ? 250 : 0);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [term, genre, requestedPage, retry, searchEnabled]);
+  }, [term, genre, requestedPage, retry, searchEnabled, seed]);
 
   useEffect(() => {
     if (!filtersOpen) return;
@@ -73,10 +100,38 @@ export default function BookCatalog({ query = "", showSearchForm = false }) {
     return () => controller.abort();
   }, [filtersOpen, genresRetry]);
 
+  useLayoutEffect(() => {
+    if (!filtersOpen) { setFilterPosition(null); return; }
+    function positionMenu() {
+      const button = filterButtonRef.current;
+      if (!button) return;
+      const rect = button.getBoundingClientRect();
+      const margin = 12, gap = 8;
+      const width = Math.min(256, window.innerWidth - margin * 2);
+      const below = window.innerHeight - rect.bottom - gap - margin;
+      const above = rect.top - gap - margin;
+      const openAbove = below < 220 && above > below;
+      setFilterPosition({
+        position: "fixed",
+        width,
+        left: Math.max(margin, Math.min(rect.right - width, window.innerWidth - width - margin)),
+        ...(openAbove ? { bottom: window.innerHeight - rect.top + gap } : { top: rect.bottom + gap }),
+        maxHeight: Math.max(0, openAbove ? above : below),
+      });
+    }
+    positionMenu();
+    window.addEventListener("resize", positionMenu);
+    window.addEventListener("scroll", positionMenu, true);
+    return () => {
+      window.removeEventListener("resize", positionMenu);
+      window.removeEventListener("scroll", positionMenu, true);
+    };
+  }, [filtersOpen]);
+
   useEffect(() => {
     if (!filtersOpen) return;
     function dismiss(event) {
-      if (!filterRef.current?.contains(event.target)) setFiltersOpen(false);
+      if (!filterRef.current?.contains(event.target) && !filterMenuRef.current?.contains(event.target)) setFiltersOpen(false);
     }
     function escape(event) {
       if (event.key === "Escape") {
@@ -130,24 +185,24 @@ export default function BookCatalog({ query = "", showSearchForm = false }) {
   return (
     <section ref={sectionRef} className="space-y-5 scroll-mt-6" aria-label="Catálogo de livros" aria-busy={loading}>
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h2 className="font-display text-3xl text-white">{term ? "Resultados da busca" : showSearchForm ? "Confira se o livro já existe" : "Explore os livros"}</h2>
-        <div className="flex items-center gap-4">
+        <h2 className="font-display text-3xl text-white">{term ? "Resultados da busca" : showSearchForm ? "Confira se o livro já existe" : visible?.personalized ? "Para você" : "Descubra sua próxima leitura"}</h2>
+        <div className="flex flex-wrap items-center gap-3">
           {searchEnabled && <span className="text-sm text-mist">{books.length} livros</span>}
           <div ref={filterRef} className="relative">
           <button ref={filterButtonRef} type="button" aria-expanded={filtersOpen} aria-controls="catalog-filters" onClick={() => setFiltersOpen(value => !value)} className={`inline-flex min-h-10 items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-colors hover:border-white/20 hover:bg-panelSoft hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mist/50 ${filtersOpen || genre ? "border-white/20 bg-panelSoft text-white" : "border-line bg-panel text-mist"}`}>
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M4 4h16l-6 7v7l-4 2v-9Z" /></svg>
             Filtros{genre ? " (1)" : ""}
           </button>
-          {filtersOpen && <div id="catalog-filters" aria-label="Filtrar por gênero" className="absolute right-0 top-full z-30 mt-2 w-64 max-w-[calc(100vw-3rem)] rounded-xl border border-line bg-panel p-2 shadow-card">
+          {filtersOpen && filterPosition && createPortal(<div ref={filterMenuRef} id="catalog-filters" aria-label="Filtrar por gênero" style={filterPosition} className="fixed z-50 flex flex-col overflow-hidden rounded-xl border border-line bg-panel p-2 shadow-card">
             <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-mist">Gênero</p>
-            <div className="max-h-64 overflow-y-auto overscroll-contain">
+            <div className="min-h-0 max-h-64 overflow-y-auto overscroll-contain">
               {["", ...new Set([...(genre ? [genre] : []), ...genres])].map(value => <button key={value} type="button" aria-pressed={genre === value} onClick={() => selectGenre(value)} className={`flex min-h-10 w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-panelSoft focus-visible:outline-copper ${genre === value ? "bg-copper/10 text-copper" : "text-ink"}`}>
                 <span>{value || "Todos os gêneros"}</span>{genre === value && <span aria-hidden="true">✓</span>}
               </button>)}
             </div>
             {genresLoading && <p role="status" className="px-3 py-2 text-sm text-mist">Carregando gêneros…</p>}
             {genresError && <p role="alert" className="px-3 py-2 text-sm text-mist">Não foi possível carregar os gêneros. <button type="button" onClick={() => setGenresRetry(value => value + 1)} className="text-copper underline">Tentar novamente</button></p>}
-          </div>}
+          </div>, document.body)}
           </div>
         </div>
       </div>

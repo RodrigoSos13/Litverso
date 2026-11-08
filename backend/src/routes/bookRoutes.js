@@ -8,6 +8,7 @@ import {
 } from "../controllers/bookController.js";
 
 import { importGoogleBook, searchGoogleBooks } from "../controllers/googleBooksController.js";
+import { getRecommendationPreferences, updateRecommendationPreferences } from "../controllers/recommendationController.js";
 const router = Router();
 const requests = new Map();
 function limitGoogleBooks(req, res, next) {
@@ -23,6 +24,10 @@ function limitGoogleBooks(req, res, next) {
 router.get("/google/search", limitGoogleBooks, searchGoogleBooks);
 router.get("/google/discover", limitGoogleBooks, searchGoogleBooks);
 router.post("/google/import", limitGoogleBooks, importGoogleBook);
+router.get("/interests", getRecommendationPreferences);
+router.post("/interests", updateRecommendationPreferences);
+router.put("/interests", updateRecommendationPreferences);
+router.delete("/interests", updateRecommendationPreferences);
 
 router.get("/genres", getGenres);
 router.get("/catalog", getCatalog);
