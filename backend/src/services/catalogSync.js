@@ -1,3 +1,4 @@
+import { blockedAuthor } from "./importPolicy.js";
 import { normalizeBookGenres } from "./bookGenres.js";
 import { randomUUID } from "node:crypto";
 import mongoose from "mongoose";
@@ -7,8 +8,8 @@ import { catalogFields } from "./catalogFields.js";
 import { searchText } from "./bookSearch.js";
 
 export const defaultCatalogQueries = [
-  "Stephen King", "Machado de Assis", "Brandon Sanderson", "Agatha Christie",
-  "Clarice Lispector", "Jorge Amado", "José Saramago", "J R R Tolkien",
+  "Stephen King", "Brandon Sanderson", "Agatha Christie",
+  "Clarice Lispector", "José Saramago", "J R R Tolkien",
   "J K Rowling", "George R R Martin", "Conceição Evaristo", "Jane Austen",
 ];
 const stateSchema = new mongoose.Schema({
@@ -32,7 +33,7 @@ export async function saveCatalogVolumes(volumes) {
   let inserted = 0;
   let updated = 0;
   for (const volume of volumes) {
-    if (!volume?.googleBooksId || !isSupportedLanguage(volume.idioma) || !catalogFields(volume).catalogHasCover) continue;
+    if (blockedAuthor(volume?.autor) || !volume?.googleBooksId || !isSupportedLanguage(volume.idioma) || !catalogFields(volume).catalogHasCover) continue;
     // Um cadastro manual ou outra edição com o mesmo ISBN mantém seu ID.
     const existing = await Book.findOne({ $or: [
       { googleBooksId: volume.googleBooksId },
@@ -41,7 +42,7 @@ export async function saveCatalogVolumes(volumes) {
     if (existing && existing.googleBooksId !== volume.googleBooksId) continue;
     const merged = { ...volume, generos: normalizeBookGenres([...(volume.generos?.length ? volume.generos : [volume.genero]), ...(existing?.generos || [])]) };
     const fields = { ...merged, ...catalogFields(merged), catalogSyncedAt: new Date() };
-    const result = await Book.updateOne({ googleBooksId: volume.googleBooksId }, { $set: fields }, { upsert: true, runValidators: true });
+    const result = await Book.updateOne({ googleBooksId: volume.googleBooksId }, { $set: Object.fromEntries(Object.entries(fields).filter(([key]) => !["mediaAvaliacoes", "totalAvaliacoes", "destaque"].includes(key))) }, { upsert: true, runValidators: true });
     inserted += result.upsertedCount;
     updated += result.matchedCount;
   }

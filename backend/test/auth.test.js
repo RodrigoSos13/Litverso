@@ -752,3 +752,27 @@ test("denúncias protegem dados, privilégios e decisões pela API", async () =>
   await User.updateOne({ _id: user._id }, { $set: { role: "user" } });
   assert.equal((await request("/reports", { session })).status, 403);
 });
+
+test("importador em lotes grava no MongoDB e mantém endpoints, traduções e avaliações", async () => {
+  const { runImport } = await import('../src/services/catalogImport.js');
+  const volume = { googleBooksId: 'batch_integration', titulo: 'Aventura do importador', autor: 'Autora Verificada', genero: 'Fantasia', generos: ['Fantasia'], descricao: 'Metadados de teste', idioma: 'pt', urlCapa: 'https://books.google.com/cover.jpg' };
+  const task = { titulo: volume.titulo, autor: volume.autor, titulosAlternativos: ['Importer Adventure'] };
+  const repository = {
+    list: () => Book.find({}).lean(),
+    insert: async payload => {
+      const result = await Book.updateOne({ importWorkKey: payload.importWorkKey }, { $setOnInsert: payload }, { upsert: true, runValidators: true });
+      return Boolean(result.upsertedCount);
+    },
+  };
+  const source = { search: async () => ({ livros: [volume] }), coverAvailable: async () => true };
+  await runImport({ tasks: [task], source, repository, state: {} });
+  const stored = await Book.findOne({ googleBooksId: volume.googleBooksId });
+  await Book.updateOne({ _id: stored._id }, { $set: { mediaAvaliacoes: 4.5, totalAvaliacoes: 2 } });
+  await runImport({ tasks: [task], source, repository, state: {} });
+  assert.equal(await Book.countDocuments({ googleBooksId: volume.googleBooksId }), 1);
+  assert.equal((await Book.findById(stored._id)).mediaAvaliacoes, 4.5);
+  const catalog = await request('/books/catalog?search=Importer%20Adventure&genre=Fantasia');
+  assert.equal(catalog.status, 200);
+  assert.equal(catalog.data.livros[0]._id, String(stored._id));
+  assert.equal((await request(`/books/${stored._id}`)).status, 200);
+});

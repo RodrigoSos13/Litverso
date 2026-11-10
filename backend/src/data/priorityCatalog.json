@@ -1,0 +1,2520 @@
+[
+  {
+    "titulo": "O Hobbit",
+    "autor": "J. R. R. Tolkien",
+    "genero": "Fantasia",
+    "titulosAlternativos": [
+      "The Hobbit"
+    ]
+  },
+  {
+    "titulo": "A Sociedade do Anel",
+    "autor": "J. R. R. Tolkien",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "As Duas Torres",
+    "autor": "J. R. R. Tolkien",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Retorno do Rei",
+    "autor": "J. R. R. Tolkien",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Silmarillion",
+    "autor": "J. R. R. Tolkien",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Contos Inacabados",
+    "autor": "J. R. R. Tolkien",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Os Filhos de Húrin",
+    "autor": "J. R. R. Tolkien",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Beren e Lúthien",
+    "autor": "J. R. R. Tolkien",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Queda de Gondolin",
+    "autor": "J. R. R. Tolkien",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Caminho dos Reis",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Palavras de Radiância",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Juramentada",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Ritmo de Guerra",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Wind and Truth",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Império Final",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Poço da Ascensão",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Herói das Eras",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Liga da Lei",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Sombras de Si",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Os Braceletes da Perdição",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Metal Perdido",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Elantris",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Warbreaker",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Tress of the Emerald Sea",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Yumi and the Nightmare Painter",
+    "autor": "Brandon Sanderson",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Guerra dos Tronos",
+    "autor": "George R. R. Martin",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Fúria dos Reis",
+    "autor": "George R. R. Martin",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Tormenta de Espadas",
+    "autor": "George R. R. Martin",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Festim dos Corvos",
+    "autor": "George R. R. Martin",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Dança dos Dragões",
+    "autor": "George R. R. Martin",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Fogo & Sangue",
+    "autor": "George R. R. Martin",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Cavaleiro dos Sete Reinos",
+    "autor": "George R. R. Martin",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Nome do Vento",
+    "autor": "Patrick Rothfuss",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Temor do Sábio",
+    "autor": "Patrick Rothfuss",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Música do Silêncio",
+    "autor": "Patrick Rothfuss",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Olho do Mundo",
+    "autor": "Robert Jordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Grande Caçada",
+    "autor": "Robert Jordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Dragão Renascido",
+    "autor": "Robert Jordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Feiticeiro de Terramar",
+    "autor": "Ursula K. Le Guin",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Último Desejo",
+    "autor": "Andrzej Sapkowski",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Espada do Destino",
+    "autor": "Andrzej Sapkowski",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Sangue dos Elfos",
+    "autor": "Andrzej Sapkowski",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Poder da Espada",
+    "autor": "Joe Abercrombie",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Antes da Forca",
+    "autor": "Joe Abercrombie",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Duelo dos Reis",
+    "autor": "Joe Abercrombie",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "As Mentiras de Locke Lamora",
+    "autor": "Scott Lynch",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Aprendiz de Assassino",
+    "autor": "Robin Hobb",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Guerra da Papoula",
+    "autor": "R. F. Kuang",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A República do Dragão",
+    "autor": "R. F. Kuang",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Deus em Chamas",
+    "autor": "R. F. Kuang",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Priorado da Laranjeira",
+    "autor": "Samantha Shannon",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Eragon",
+    "autor": "Christopher Paolini",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Eldest",
+    "autor": "Christopher Paolini",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Brisingr",
+    "autor": "Christopher Paolini",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Herança",
+    "autor": "Christopher Paolini",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Harry Potter e a Pedra Filosofal",
+    "autor": "J. K. Rowling",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Harry Potter e a Câmara Secreta",
+    "autor": "J. K. Rowling",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Harry Potter e o Prisioneiro de Azkaban",
+    "autor": "J. K. Rowling",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Harry Potter e o Cálice de Fogo",
+    "autor": "J. K. Rowling",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Harry Potter e a Ordem da Fênix",
+    "autor": "J. K. Rowling",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Harry Potter e o Enigma do Príncipe",
+    "autor": "J. K. Rowling",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Harry Potter e as Relíquias da Morte",
+    "autor": "J. K. Rowling",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Ladrão de Raios",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Mar de Monstros",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Maldição do Titã",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Batalha do Labirinto",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Último Olimpiano",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Herói Perdido",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Filho de Netuno",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Marca de Atena",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Casa de Hades",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Sangue do Olimpo",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Cálice dos Deuses",
+    "autor": "Rick Riordan",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Corte de Espinhos e Rosas",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Corte de Névoa e Fúria",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Corte de Asas e Ruína",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Corte de Gelo e Estrelas",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Corte de Chamas Prateadas",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Trono de Vidro",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Coroa da Meia-Noite",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Herdeira do Fogo",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Rainha das Sombras",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Império de Tempestades",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Torre do Alvorecer",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Reino de Cinzas",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Casa de Terra e Sangue",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Casa de Céu e Sopro",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Casa de Chama e Sombra",
+    "autor": "Sarah J. Maas",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Quarta Asa",
+    "autor": "Rebecca Yarros",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Chama de Ferro",
+    "autor": "Rebecca Yarros",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Tempestade de Ônix",
+    "autor": "Rebecca Yarros",
+    "genero": "Fantasia",
+    "titulosAlternativos": [
+      "Onyx Storm"
+    ]
+  },
+  {
+    "titulo": "O Príncipe Cruel",
+    "autor": "Holly Black",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "O Rei Perverso",
+    "autor": "Holly Black",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Rainha do Nada",
+    "autor": "Holly Black",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Cidade dos Ossos",
+    "autor": "Cassandra Clare",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Cidade das Cinzas",
+    "autor": "Cassandra Clare",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Cidade de Vidro",
+    "autor": "Cassandra Clare",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Anjo Mecânico",
+    "autor": "Cassandra Clare",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Sombra e Ossos",
+    "autor": "Leigh Bardugo",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Sol e Tormenta",
+    "autor": "Leigh Bardugo",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Ruína e Ascensão",
+    "autor": "Leigh Bardugo",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Six of Crows: Sangue e Mentiras",
+    "autor": "Leigh Bardugo",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Reino Corrompido",
+    "autor": "Leigh Bardugo",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Vida Invisível de Addie LaRue",
+    "autor": "V. E. Schwab",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Um Tom Mais Escuro de Magia",
+    "autor": "V. E. Schwab",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Caraval",
+    "autor": "Stephanie Garber",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Lendário",
+    "autor": "Stephanie Garber",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Finale",
+    "autor": "Stephanie Garber",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Era Uma Vez um Coração Partido",
+    "autor": "Stephanie Garber",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Balada do Felizes para Nunca",
+    "autor": "Stephanie Garber",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Maldição do Amor Verdadeiro",
+    "autor": "Stephanie Garber",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "De Sangue e Cinzas",
+    "autor": "Jennifer L. Armentrout",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "A Serpente e as Asas Feitas de Noite",
+    "autor": "Carissa Broadbent",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "Assistente do Vilão",
+    "autor": "Hannah Nicole Maehrer",
+    "genero": "Fantasia"
+  },
+  {
+    "titulo": "E Não Sobrou Nenhum",
+    "autor": "Agatha Christie",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Assassinato no Expresso do Oriente",
+    "autor": "Agatha Christie",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Morte no Nilo",
+    "autor": "Agatha Christie",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "O Assassinato de Roger Ackroyd",
+    "autor": "Agatha Christie",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Um Corpo na Biblioteca",
+    "autor": "Agatha Christie",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Os Crimes ABC",
+    "autor": "Agatha Christie",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Casa Torta",
+    "autor": "Agatha Christie",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "O Misterioso Caso de Styles",
+    "autor": "Agatha Christie",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Convite para um Homicídio",
+    "autor": "Agatha Christie",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Empregada",
+    "autor": "Freida McFadden",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "O Segredo da Empregada",
+    "autor": "Freida McFadden",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Empregada Está de Olho",
+    "autor": "Freida McFadden",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Nunca Minta",
+    "autor": "Freida McFadden",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "O Professor",
+    "autor": "Freida McFadden",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Inquilina",
+    "autor": "Freida McFadden",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Intrusa",
+    "autor": "Freida McFadden",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Mulher na Janela do Quarto",
+    "autor": "Freida McFadden",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Jantar Secreto",
+    "autor": "Raphael Montes",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Suicidas",
+    "autor": "Raphael Montes",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Dias Perfeitos",
+    "autor": "Raphael Montes",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Uma Mulher no Escuro",
+    "autor": "Raphael Montes",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Bom Dia, Verônica",
+    "autor": "Raphael Montes",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "O Vilarejo",
+    "autor": "Raphael Montes",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Mágica Mortal",
+    "autor": "Raphael Montes",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Estranha na Cama",
+    "autor": "Raphael Montes",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Paciente Silenciosa",
+    "autor": "Alex Michaelides",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "As Musas",
+    "autor": "Alex Michaelides",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Garota Exemplar",
+    "autor": "Gillian Flynn",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Objetos Cortantes",
+    "autor": "Gillian Flynn",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Garota no Trem",
+    "autor": "Paula Hawkins",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Mulher na Janela",
+    "autor": "A. J. Finn",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Os Homens que Não Amavam as Mulheres",
+    "autor": "Stieg Larsson",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Menina que Brincava com Fogo",
+    "autor": "Stieg Larsson",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Rainha do Castelo de Ar",
+    "autor": "Stieg Larsson",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "O Código Da Vinci",
+    "autor": "Dan Brown",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Anjos e Demônios",
+    "autor": "Dan Brown",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Inferno",
+    "autor": "Dan Brown",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "O Símbolo Perdido",
+    "autor": "Dan Brown",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Origem",
+    "autor": "Dan Brown",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "O Segredo Final",
+    "autor": "Dan Brown",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Não Conte a Ninguém",
+    "autor": "Harlan Coben",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Desaparecido para Sempre",
+    "autor": "Harlan Coben",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "A Verdade Sobre o Caso Harry Quebert",
+    "autor": "Joël Dicker",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Manual de Assassinato para Boas Garotas",
+    "autor": "Holly Jackson",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Boa Garota, Segredo Mortal",
+    "autor": "Holly Jackson",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Boa Garota Nunca Mais",
+    "autor": "Holly Jackson",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "O Massacre da Família Hope",
+    "autor": "Riley Sager",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "Um Estudo em Vermelho",
+    "autor": "Arthur Conan Doyle",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "O Cão dos Baskervilles",
+    "autor": "Arthur Conan Doyle",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "As Aventuras de Sherlock Holmes",
+    "autor": "Arthur Conan Doyle",
+    "genero": "Suspense"
+  },
+  {
+    "titulo": "It: A Coisa",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "O Iluminado",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Doutor Sono",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Carrie, a Estranha",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Cemitério Maldito",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Misery: Louca Obsessão",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "A Dança da Morte",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "A Zona Morta",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Sob a Redoma",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Novembro de 63",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "O Instituto",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "O Cemitério",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "A Hora do Vampiro",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "O Pistoleiro",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "A Escolha dos Três",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "As Terras Devastadas",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Mago e Vidro",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Lobos de Calla",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Canção de Susannah",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "A Torre Negra",
+    "autor": "Stephen King",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Drácula",
+    "autor": "Bram Stoker",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Frankenstein",
+    "autor": "Mary Shelley",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "A Assombração da Casa da Colina",
+    "autor": "Shirley Jackson",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Sempre Vivemos no Castelo",
+    "autor": "Shirley Jackson",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "O Exorcista",
+    "autor": "William Peter Blatty",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "O Bebê de Rosemary",
+    "autor": "Ira Levin",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "O Chamado de Cthulhu",
+    "autor": "H. P. Lovecraft",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Nas Montanhas da Loucura",
+    "autor": "H. P. Lovecraft",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Histórias Extraordinárias",
+    "autor": "Edgar Allan Poe",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Caixa de Pássaros",
+    "autor": "Josh Malerman",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "O Pacto",
+    "autor": "Joe Hill",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "A Estrada da Noite",
+    "autor": "Joe Hill",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "O Grupo de Apoio para Garotas Finais",
+    "autor": "Grady Hendrix",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "As Coisas que Perdemos no Fogo",
+    "autor": "Mariana Enriquez",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "Nossa Parte de Noite",
+    "autor": "Mariana Enriquez",
+    "genero": "Terror"
+  },
+  {
+    "titulo": "É Assim que Acaba",
+    "autor": "Colleen Hoover",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "É Assim que Começa",
+    "autor": "Colleen Hoover",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Verity",
+    "autor": "Colleen Hoover",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Todas as Suas (Im)perfeições",
+    "autor": "Colleen Hoover",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "O Lado Feio do Amor",
+    "autor": "Colleen Hoover",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Novembro, 9",
+    "autor": "Colleen Hoover",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Talvez Um Dia",
+    "autor": "Colleen Hoover",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Confesse",
+    "autor": "Colleen Hoover",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Até o Verão Terminar",
+    "autor": "Colleen Hoover",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "As Mil Partes do Meu Coração",
+    "autor": "Colleen Hoover",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Os Sete Maridos de Evelyn Hugo",
+    "autor": "Taylor Jenkins Reid",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Daisy Jones & The Six",
+    "autor": "Taylor Jenkins Reid",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Malibu Renasce",
+    "autor": "Taylor Jenkins Reid",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Amor(es) Verdadeiro(s)",
+    "autor": "Taylor Jenkins Reid",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Em Outra Vida, Talvez?",
+    "autor": "Taylor Jenkins Reid",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Carrie Soto Está de Volta",
+    "autor": "Taylor Jenkins Reid",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Atmosfera",
+    "autor": "Taylor Jenkins Reid",
+    "genero": "Romance",
+    "titulosAlternativos": [
+      "Atmosphere"
+    ]
+  },
+  {
+    "titulo": "A Hipótese do Amor",
+    "autor": "Ali Hazelwood",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "A Razão do Amor",
+    "autor": "Ali Hazelwood",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Amor, Teoricamente",
+    "autor": "Ali Hazelwood",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Xeque-Mate",
+    "autor": "Ali Hazelwood",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Noiva",
+    "autor": "Ali Hazelwood",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Não É Amor",
+    "autor": "Ali Hazelwood",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Leitura de Verão",
+    "autor": "Emily Henry",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "De Férias com Você",
+    "autor": "Emily Henry",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Loucos por Livros",
+    "autor": "Emily Henry",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Lugar Feliz",
+    "autor": "Emily Henry",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Uma Vida e Tanto",
+    "autor": "Emily Henry",
+    "genero": "Romance",
+    "titulosAlternativos": [
+      "Great Big Beautiful Life"
+    ]
+  },
+  {
+    "titulo": "Melhor que nos Filmes",
+    "autor": "Lynn Painter",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Apostando no Amor",
+    "autor": "Lynn Painter",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Uma Farsa de Amor na Espanha",
+    "autor": "Elena Armas",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Vermelho, Branco e Sangue Azul",
+    "autor": "Casey McQuiston",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Imperfeitos",
+    "autor": "Christina Lauren",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Depois Daquele Verão",
+    "autor": "Carley Fortune",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Como Eu Era Antes de Você",
+    "autor": "Jojo Moyes",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Depois de Você",
+    "autor": "Jojo Moyes",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Ainda Sou Eu",
+    "autor": "Jojo Moyes",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Diário de Uma Paixão",
+    "autor": "Nicholas Sparks",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Um Amor para Recordar",
+    "autor": "Nicholas Sparks",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Querido John",
+    "autor": "Nicholas Sparks",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "A Culpa É das Estrelas",
+    "autor": "John Green",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Cidades de Papel",
+    "autor": "John Green",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Quem É Você, Alasca?",
+    "autor": "John Green",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Tartarugas Até Lá Embaixo",
+    "autor": "John Green",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Eleanor & Park",
+    "autor": "Rainbow Rowell",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Pessoas Normais",
+    "autor": "Sally Rooney",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Conversas Entre Amigos",
+    "autor": "Sally Rooney",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Teto para Dois",
+    "autor": "Beth O'Leary",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "O Duque e Eu",
+    "autor": "Julia Quinn",
+    "genero": "Romance"
+  },
+  {
+    "titulo": "Duna",
+    "autor": "Frank Herbert",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Messias de Duna",
+    "autor": "Frank Herbert",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Filhos de Duna",
+    "autor": "Frank Herbert",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Imperador-Deus de Duna",
+    "autor": "Frank Herbert",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Fundação",
+    "autor": "Isaac Asimov",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Fundação e Império",
+    "autor": "Isaac Asimov",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Segunda Fundação",
+    "autor": "Isaac Asimov",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Eu, Robô",
+    "autor": "Isaac Asimov",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "O Fim da Eternidade",
+    "autor": "Isaac Asimov",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "2001: Uma Odisseia no Espaço",
+    "autor": "Arthur C. Clarke",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Androides Sonham com Ovelhas Elétricas?",
+    "autor": "Philip K. Dick",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "O Homem do Castelo Alto",
+    "autor": "Philip K. Dick",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Neuromancer",
+    "autor": "William Gibson",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Count Zero",
+    "autor": "William Gibson",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Mona Lisa Overdrive",
+    "autor": "William Gibson",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Jogador Número 1",
+    "autor": "Ernest Cline",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Jogador Número 2",
+    "autor": "Ernest Cline",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Perdido em Marte",
+    "autor": "Andy Weir",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Devoradores de Estrelas",
+    "autor": "Andy Weir",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Matéria Escura",
+    "autor": "Blake Crouch",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Recursão",
+    "autor": "Blake Crouch",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "O Problema dos Três Corpos",
+    "autor": "Cixin Liu",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "A Floresta Sombria",
+    "autor": "Cixin Liu",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "O Fim da Morte",
+    "autor": "Cixin Liu",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Jogos Vorazes",
+    "autor": "Suzanne Collins",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Em Chamas",
+    "autor": "Suzanne Collins",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "A Esperança",
+    "autor": "Suzanne Collins",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "A Cantiga dos Pássaros e das Serpentes",
+    "autor": "Suzanne Collins",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Amanhecer na Colheita",
+    "autor": "Suzanne Collins",
+    "genero": "Ficção científica",
+    "titulosAlternativos": [
+      "Sunrise on the Reaping"
+    ]
+  },
+  {
+    "titulo": "Divergente",
+    "autor": "Veronica Roth",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Insurgente",
+    "autor": "Veronica Roth",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Convergente",
+    "autor": "Veronica Roth",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Correr ou Morrer",
+    "autor": "James Dashner",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Prova de Fogo",
+    "autor": "James Dashner",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "A Cura Mortal",
+    "autor": "James Dashner",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "1984",
+    "autor": "George Orwell",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Admirável Mundo Novo",
+    "autor": "Aldous Huxley",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Fahrenheit 451",
+    "autor": "Ray Bradbury",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "O Conto da Aia",
+    "autor": "Margaret Atwood",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Os Testamentos",
+    "autor": "Margaret Atwood",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "A Guerra dos Mundos",
+    "autor": "H. G. Wells",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "A Máquina do Tempo",
+    "autor": "H. G. Wells",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "O Guia do Mochileiro das Galáxias",
+    "autor": "Douglas Adams",
+    "genero": "Ficção científica"
+  },
+  {
+    "titulo": "Crime e Castigo",
+    "autor": "Fiódor Dostoiévski",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Os Irmãos Karamázov",
+    "autor": "Fiódor Dostoiévski",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Idiota",
+    "autor": "Fiódor Dostoiévski",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Memórias do Subsolo",
+    "autor": "Fiódor Dostoiévski",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Anna Kariênina",
+    "autor": "Liev Tolstói",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Guerra e Paz",
+    "autor": "Liev Tolstói",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "A Morte de Ivan Ilitch",
+    "autor": "Liev Tolstói",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Os Miseráveis",
+    "autor": "Victor Hugo",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Corcunda de Notre-Dame",
+    "autor": "Victor Hugo",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Conde de Monte Cristo",
+    "autor": "Alexandre Dumas",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Os Três Mosqueteiros",
+    "autor": "Alexandre Dumas",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Orgulho e Preconceito",
+    "autor": "Jane Austen",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Razão e Sensibilidade",
+    "autor": "Jane Austen",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Emma",
+    "autor": "Jane Austen",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Jane Eyre",
+    "autor": "Charlotte Brontë",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Morro dos Ventos Uivantes",
+    "autor": "Emily Brontë",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Retrato de Dorian Gray",
+    "autor": "Oscar Wilde",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "A Metamorfose",
+    "autor": "Franz Kafka",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Processo",
+    "autor": "Franz Kafka",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Castelo",
+    "autor": "Franz Kafka",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Estrangeiro",
+    "autor": "Albert Camus",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "A Peste",
+    "autor": "Albert Camus",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "A Revolução dos Bichos",
+    "autor": "George Orwell",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Pequeno Príncipe",
+    "autor": "Antoine de Saint-Exupéry",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Dom Quixote",
+    "autor": "Miguel de Cervantes",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "A Divina Comédia",
+    "autor": "Dante Alighieri",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Ilíada",
+    "autor": "Homero",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Odisseia",
+    "autor": "Homero",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Moby Dick",
+    "autor": "Herman Melville",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Velho e o Mar",
+    "autor": "Ernest Hemingway",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Grande Gatsby",
+    "autor": "F. Scott Fitzgerald",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Sol É para Todos",
+    "autor": "Harper Lee",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Senhor das Moscas",
+    "autor": "William Golding",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Ratos e Homens",
+    "autor": "John Steinbeck",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "As Vinhas da Ira",
+    "autor": "John Steinbeck",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Cem Anos de Solidão",
+    "autor": "Gabriel García Márquez",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Amor nos Tempos do Cólera",
+    "autor": "Gabriel García Márquez",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "A Casa dos Espíritos",
+    "autor": "Isabel Allende",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Ensaio Sobre a Cegueira",
+    "autor": "José Saramago",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "As Intermitências da Morte",
+    "autor": "José Saramago",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "Sidarta",
+    "autor": "Hermann Hesse",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "O Lobo da Estepe",
+    "autor": "Hermann Hesse",
+    "genero": "Clássicos"
+  },
+  {
+    "titulo": "A Hora da Estrela",
+    "autor": "Clarice Lispector",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "A Paixão Segundo G.H.",
+    "autor": "Clarice Lispector",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Perto do Coração Selvagem",
+    "autor": "Clarice Lispector",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Laços de Família",
+    "autor": "Clarice Lispector",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Água Viva",
+    "autor": "Clarice Lispector",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Vidas Secas",
+    "autor": "Graciliano Ramos",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "São Bernardo",
+    "autor": "Graciliano Ramos",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Angústia",
+    "autor": "Graciliano Ramos",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Memórias do Cárcere",
+    "autor": "Graciliano Ramos",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Tudo É Rio",
+    "autor": "Carla Madeira",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Véspera",
+    "autor": "Carla Madeira",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "A Natureza da Mordida",
+    "autor": "Carla Madeira",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Quando",
+    "autor": "Carla Madeira",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Olhos d'Água",
+    "autor": "Conceição Evaristo",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Ponciá Vicêncio",
+    "autor": "Conceição Evaristo",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Becos da Memória",
+    "autor": "Conceição Evaristo",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "A Cabeça do Santo",
+    "autor": "Socorro Acioli",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Oração para Desaparecer",
+    "autor": "Socorro Acioli",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Torto Arado",
+    "autor": "Itamar Vieira Junior",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Salvar o Fogo",
+    "autor": "Itamar Vieira Junior",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Grande Sertão: Veredas",
+    "autor": "João Guimarães Rosa",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Sagarana",
+    "autor": "João Guimarães Rosa",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Primeiras Estórias",
+    "autor": "João Guimarães Rosa",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Triste Fim de Policarpo Quaresma",
+    "autor": "Lima Barreto",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Clara dos Anjos",
+    "autor": "Lima Barreto",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "O Cortiço",
+    "autor": "Aluísio Azevedo",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Iracema",
+    "autor": "José de Alencar",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Senhora",
+    "autor": "José de Alencar",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "O Guarani",
+    "autor": "José de Alencar",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "O Tempo e o Vento",
+    "autor": "Érico Veríssimo",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Auto da Compadecida",
+    "autor": "Ariano Suassuna",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "O Romance d'A Pedra do Reino",
+    "autor": "Ariano Suassuna",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "O Quinze",
+    "autor": "Rachel de Queiroz",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "As Meninas",
+    "autor": "Lygia Fagundes Telles",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Antes do Baile Verde",
+    "autor": "Lygia Fagundes Telles",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Feliz Ano Novo",
+    "autor": "Rubem Fonseca",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Dois Irmãos",
+    "autor": "Milton Hatoum",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "O Alquimista",
+    "autor": "Paulo Coelho",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Brida",
+    "autor": "Paulo Coelho",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Veronika Decide Morrer",
+    "autor": "Paulo Coelho",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Onze Minutos",
+    "autor": "Paulo Coelho",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Ideias para Adiar o Fim do Mundo",
+    "autor": "Ailton Krenak",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "A Vida Não Me Assusta",
+    "autor": "Ailton Krenak",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "O Avesso da Pele",
+    "autor": "Jeferson Tenório",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "Lavoura Arcaica",
+    "autor": "Raduan Nassar",
+    "genero": "Literatura brasileira"
+  },
+  {
+    "titulo": "O Caçador de Pipas",
+    "autor": "Khaled Hosseini",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "A Cidade do Sol",
+    "autor": "Khaled Hosseini",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "A Menina que Roubava Livros",
+    "autor": "Markus Zusak",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "A Biblioteca da Meia-Noite",
+    "autor": "Matt Haig",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Os Humanos",
+    "autor": "Matt Haig",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Um Homem Chamado Ove",
+    "autor": "Fredrik Backman",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Gente Ansiosa",
+    "autor": "Fredrik Backman",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Meus Amigos",
+    "autor": "Fredrik Backman",
+    "genero": "Ficção contemporânea",
+    "titulosAlternativos": [
+      "My Friends"
+    ]
+  },
+  {
+    "titulo": "O Rouxinol",
+    "autor": "Kristin Hannah",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "As Quatro Estações do Amor",
+    "autor": "Kristin Hannah",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "A Grande Solidão",
+    "autor": "Kristin Hannah",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Uma Questão de Química",
+    "autor": "Bonnie Garmus",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "A História Secreta",
+    "autor": "Donna Tartt",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "O Pintassilgo",
+    "autor": "Donna Tartt",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Babel",
+    "autor": "R. F. Kuang",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Impostora: Yellowface",
+    "autor": "R. F. Kuang",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "A Convenção da Água",
+    "autor": "Abraham Verghese",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Um Cavalheiro em Moscou",
+    "autor": "Amor Towles",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "A Canção de Aquiles",
+    "autor": "Madeline Miller",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Circe",
+    "autor": "Madeline Miller",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Os Pilares da Terra",
+    "autor": "Ken Follett",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Mundo Sem Fim",
+    "autor": "Ken Follett",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "A Amiga Genial",
+    "autor": "Elena Ferrante",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Americanah",
+    "autor": "Chimamanda Ngozi Adichie",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Pequenos Incêndios por Toda Parte",
+    "autor": "Celeste Ng",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Não Me Abandone Jamais",
+    "autor": "Kazuo Ishiguro",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Os Vestígios do Dia",
+    "autor": "Kazuo Ishiguro",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Norwegian Wood",
+    "autor": "Haruki Murakami",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Kafka à Beira-Mar",
+    "autor": "Haruki Murakami",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "1Q84",
+    "autor": "Haruki Murakami",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "A Vegetariana",
+    "autor": "Han Kang",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Atos Humanos",
+    "autor": "Han Kang",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Antes que o Café Esfrie",
+    "autor": "Toshikazu Kawaguchi",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "O Leão, a Feiticeira e o Guarda-Roupa",
+    "autor": "C. S. Lewis",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "Príncipe Caspian",
+    "autor": "C. S. Lewis",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "A Viagem do Peregrino da Alvorada",
+    "autor": "C. S. Lewis",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "A Cadeira de Prata",
+    "autor": "C. S. Lewis",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "O Cavalo e Seu Menino",
+    "autor": "C. S. Lewis",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "O Sobrinho do Mago",
+    "autor": "C. S. Lewis",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "A Última Batalha",
+    "autor": "C. S. Lewis",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "Alice no País das Maravilhas",
+    "autor": "Lewis Carroll",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "Alice Através do Espelho",
+    "autor": "Lewis Carroll",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "Matilda",
+    "autor": "Roald Dahl",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "A Fantástica Fábrica de Chocolate",
+    "autor": "Roald Dahl",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "O Bom Gigante Amigo",
+    "autor": "Roald Dahl",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "Diário de um Banana",
+    "autor": "Jeff Kinney",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "Extraordinário",
+    "autor": "R. J. Palacio",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "A Menina e o Porquinho",
+    "autor": "E. B. White",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "A História Sem Fim",
+    "autor": "Michael Ende",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "O Mágico de Oz",
+    "autor": "L. Frank Baum",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "Reinações de Narizinho",
+    "autor": "Monteiro Lobato",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "A Droga da Obediência",
+    "autor": "Pedro Bandeira",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "Bisa Bia, Bisa Bel",
+    "autor": "Ana Maria Machado",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "O Menino Maluquinho",
+    "autor": "Ziraldo",
+    "genero": "Infantojuvenil"
+  },
+  {
+    "titulo": "One Piece",
+    "autor": "Eiichiro Oda",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Naruto",
+    "autor": "Masashi Kishimoto",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Dragon Ball",
+    "autor": "Akira Toriyama",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Death Note",
+    "autor": "Tsugumi Ohba e Takeshi Obata",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Attack on Titan",
+    "autor": "Hajime Isayama",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Demon Slayer",
+    "autor": "Koyoharu Gotouge",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Jujutsu Kaisen",
+    "autor": "Gege Akutami",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Chainsaw Man",
+    "autor": "Tatsuki Fujimoto",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Berserk",
+    "autor": "Kentaro Miura",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Vagabond",
+    "autor": "Takehiko Inoue",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Vinland Saga",
+    "autor": "Makoto Yukimura",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Fullmetal Alchemist",
+    "autor": "Hiromu Arakawa",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Tokyo Ghoul",
+    "autor": "Sui Ishida",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Monster",
+    "autor": "Naoki Urasawa",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "20th Century Boys",
+    "autor": "Naoki Urasawa",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Spy x Family",
+    "autor": "Tatsuya Endo",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "My Hero Academia",
+    "autor": "Kohei Horikoshi",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Hunter x Hunter",
+    "autor": "Yoshihiro Togashi",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Bleach",
+    "autor": "Tite Kubo",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Blue Lock",
+    "autor": "Muneyuki Kaneshiro e Yusuke Nomura",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Slam Dunk",
+    "autor": "Takehiko Inoue",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Haikyu!!",
+    "autor": "Haruichi Furudate",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Watchmen",
+    "autor": "Alan Moore e Dave Gibbons",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "V de Vingança",
+    "autor": "Alan Moore e David Lloyd",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Sandman",
+    "autor": "Neil Gaiman",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Maus",
+    "autor": "Art Spiegelman",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Persépolis",
+    "autor": "Marjane Satrapi",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "Heartstopper",
+    "autor": "Alice Oseman",
+    "genero": "Quadrinhos"
+  },
+  {
+    "titulo": "A Psicologia Financeira",
+    "autor": "Morgan Housel",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Hábitos Atômicos",
+    "autor": "James Clear",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Pai Rico, Pai Pobre",
+    "autor": "Robert Kiyosaki",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Mais Esperto que o Diabo",
+    "autor": "Napoleon Hill",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Como Fazer Amigos e Influenciar Pessoas",
+    "autor": "Dale Carnegie",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "O Poder do Hábito",
+    "autor": "Charles Duhigg",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Rápido e Devagar",
+    "autor": "Daniel Kahneman",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Sapiens",
+    "autor": "Yuval Noah Harari",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Homo Deus",
+    "autor": "Yuval Noah Harari",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "21 Lições para o Século 21",
+    "autor": "Yuval Noah Harari",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Cosmos",
+    "autor": "Carl Sagan",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "O Mundo Assombrado pelos Demônios",
+    "autor": "Carl Sagan",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Uma Breve História do Tempo",
+    "autor": "Stephen Hawking",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Em Busca de Sentido",
+    "autor": "Viktor Frankl",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "A Sutil Arte de Ligar o F*da-se",
+    "autor": "Mark Manson",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Trabalho Focado",
+    "autor": "Cal Newport",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Minimalismo Digital",
+    "autor": "Cal Newport",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Comece pelo Porquê",
+    "autor": "Simon Sinek",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "As 48 Leis do Poder",
+    "autor": "Robert Greene",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "A Arte da Sedução",
+    "autor": "Robert Greene",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "O Príncipe",
+    "autor": "Maquiavel",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "A República",
+    "autor": "Platão",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Meditações",
+    "autor": "Marco Aurélio",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Sobre a Brevidade da Vida",
+    "autor": "Sêneca",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Assim Falou Zaratustra",
+    "autor": "Friedrich Nietzsche",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Além do Bem e do Mal",
+    "autor": "Friedrich Nietzsche",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "O Mal-Estar na Civilização",
+    "autor": "Sigmund Freud",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Sociedade do Cansaço",
+    "autor": "Byung-Chul Han",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Inteligência Emocional",
+    "autor": "Daniel Goleman",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Garra",
+    "autor": "Angela Duckworth",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Nada Pode Me Ferir",
+    "autor": "David Goggins",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Minha História",
+    "autor": "Michelle Obama",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "O Diário de Anne Frank",
+    "autor": "Anne Frank",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Steve Jobs",
+    "autor": "Walter Isaacson",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Elon Musk",
+    "autor": "Walter Isaacson",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Breve História de Quase Tudo",
+    "autor": "Bill Bryson",
+    "genero": "Não ficção"
+  },
+  {
+    "titulo": "Not Quite Dead Yet",
+    "autor": "Holly Jackson",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Bury Our Bones in the Midnight Soil",
+    "autor": "V. E. Schwab",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "The Compound",
+    "autor": "Aisling Rawle",
+    "genero": "Ficção contemporânea"
+  },
+  {
+    "titulo": "Alchemised",
+    "autor": "SenLinYu",
+    "genero": "Ficção contemporânea"
+  }
+]

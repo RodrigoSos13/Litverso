@@ -4,6 +4,16 @@ import { catalogFields } from "../services/catalogFields.js";
 
 const bookSchema = new mongoose.Schema(
   {
+    importWorkKey: String,
+    tituloOriginal: String,
+    titulosAlternativos: [String],
+    serie: String,
+    numeroNaSerie: Number,
+    openLibraryId: String,
+    openLibraryEditionId: String,
+    origemImportacao: String,
+    dataImportacao: Date,
+    ultimaVerificacao: Date,
     searchTokens: { type: [String], default: [] },
     titleTokens: { type: [String], default: [] },
     authorTokens: { type: [String], default: [] },
@@ -100,6 +110,7 @@ bookSchema.pre("findOneAndUpdate", function () {
   const metadata = update?.$set?.titulo ? update.$set : update?.$setOnInsert;
   if (metadata?.titulo && metadata?.autor) Object.assign(metadata, catalogFields(metadata));
 });
+bookSchema.index({ importWorkKey: 1 }, { name: "unique_import_work", unique: true, partialFilterExpression: { importWorkKey: { $type: "string" } } });
 bookSchema.index({ generos: 1 });
 bookSchema.index({ searchTokens: 1 });
 bookSchema.index({ titleTokens: 1 });

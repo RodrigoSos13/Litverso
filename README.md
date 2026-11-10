@@ -147,3 +147,133 @@ npm run user:set-admin -- nome_do_usuario
 ```
 
 Para revogar o acesso: `npm run user:set-admin -- nome_do_usuario user`. Atualize a página da conta após a alteração. Cadastro e edição de perfil não permitem alterar a função administrativa.
+
+## Importação em massa do catálogo
+
+O comando `npm run catalog:import --prefix backend -- --help` importa metadados reais sem
+executar na inicialização da API. A referência versionada em
+`backend/src/data/priorityCatalog.json` contém 500 candidatos extraídos do pedido inicial.
+São candidatos de pesquisa, não registros prontos: títulos, atribuições e lançamentos
+precisam ser confirmados pelas fontes. Não há alegação de ranking de vendas.
+
+O importador usa Google Books como fonte principal e Open Library como complemento.
+Configurações: `MONGODB_URI` e, para Google, `GOOGLE_BOOKS_API_KEY` no `.env` da raiz.
+Não usa `ATLAS_MONGODB_URI` implicitamente: o destino sempre é o MongoDB configurado
+para esta execução. Sem `MONGODB_URI`, usa `mongodb://127.0.0.1:27017/litverse`.
+No Compose de desenvolvimento, a porta publicada é 27018.
+
+```bash
+# Apenas a referência prioritária, primeiro em simulação (lê o banco, não grava nem cria índices).
+MONGODB_URI=mongodb://127.0.0.1:27018/litverse npm run catalog:import --prefix backend -- --priority --dry-run --state ../backups/catalog-import/simulation.json
+
+# Prioritários, no máximo 500 novas obras nesta invocação.
+MONGODB_URI=mongodb://127.0.0.1:27018/litverse npm run catalog:import --prefix backend -- --priority --max-new 500 --state ../backups/catalog-import/priority.json
+
+# Lista prioritária seguida de descoberta por autores e assuntos; limite de 5000 inserções.
+MONGODB_URI=mongodb://127.0.0.1:27018/litverse npm run catalog:import --prefix backend -- --max-new 5000 --pages 10
+
+# Um ou vários grupos da referência (use os nomes de genero do JSON).
+npm run catalog:import --prefix backend -- --genre "Fantasia,Romance" --max-new 300
+npm run catalog:import --prefix backend -- --author "Agatha Christie" --max-new 100
+npm run catalog:import --prefix backend -- --series "One Piece" --author "Eiichiro Oda" --max-new 100
+
+# Retoma os filtros originais e o cursor; max-new é um novo limite por invocação.
+npm run catalog:import --prefix backend -- --resume --max-new 1000
+npm run catalog:import --prefix backend -- --report
+```
+
+`--state` é relativo ao diretório de execução (com `npm --prefix backend`, ao backend).
+Sem esse parâmetro, o relatório fica em `backups/catalog-import/latest.json` na raiz.
+Use arquivos separados para simulação e gravação. `--resume` recupera os filtros salvos,
+valida a versão da lista e repete a página interrompida com deduplicação.
+`--report --state caminho.json` lê um relatório sem conectar ao banco ou às APIs.
+`--pages` limita páginas por consulta (1–50); `--delay` ajusta o intervalo entre
+requisições (mínimo 1000 ms; padrão 1100). A concorrência é deliberadamente 1.
+Requisições têm timeout e falhas temporárias recebem até três tentativas com backoff.
+Uma falha de busca preserva o cursor e encerra a execução com código 1 para retomada.
+
+### Docker
+
+A imagem do backend inclui scripts e dados. Após alterações, reconstrua a imagem.
+Monte o diretório de relatórios para manter os checkpoints ao remover o container:
+
+```bash
+docker compose build backend
+mkdir -p backups/catalog-import
+docker compose run --rm --user "$(id -u):$(id -g)" \
+  -v "$PWD/backups/catalog-import:/reports" \
+  backend npm run catalog:import -- --priority --max-new 500 --state /reports/priority.json
+
+docker compose run --rm --user "$(id -u):$(id -g)" \
+  -v "$PWD/backups/catalog-import:/reports" \
+  backend npm run catalog:import -- --resume --max-new 1000 --state /reports/priority.json
+```
+
+O MongoDB existente do Compose é reutilizado. Não execute `seed` para importar livros.
+O worker antigo `catalog-sync` continua separado; esta expansão não é agendada na
+inicialização. É possível desativar o worker com `CATALOG_SYNC_ENABLED=false`.
+
+### Qualidade, preservação e relatórios
+
+Machado de Assis e Jorge Amado são excluídos tanto nas buscas Google quanto na
+persistência do importador e do worker. Os registros antigos não são apagados.
+O importador nunca altera um livro existente: mantém seus IDs, dados manuais,
+avaliações, leituras e publicações. Avaliações externas são removidas do payload.
+São inserções idempotentes com `$setOnInsert`, índice parcial único de obra importada,
+ISBN, IDs de fonte e comparação conservadora de título/autoria. Nenhum índice existente
+é removido ou reconstruído. O índice novo não modifica registros anteriores.
+
+As traduções usam aliases explícitos da referência ou o identificador de obra da
+Open Library. Não se presume que títulos diferentes sejam traduções: aliases novos
+podem ser acrescentados ao JSON após revisão. A referência não oferece um mapa
+universal de traduções. Sufixos conhecidos de acabamento não criam novas obras;
+números e títulos de volumes são preservados. Volumes de mangás nunca são gerados
+artificialmente. Correspondência aproximada de títulos é evitada para não unir obras.
+
+A seleção prioriza português e usa inglês como alternativa, compatível com os filtros
+atuais. O código `pt` da fonte não comprova que uma edição seja brasileira; idioma e
+editora são preservados como fornecidos, sem renomeá-los como `pt-BR`. A Open Library
+fornece campos de uma única edição: não se misturam arrays de ISBN/capa/idioma de obras.
+As capas precisam responder com conteúdo de imagem em HTTPS nos hosts das fontes.
+Uma capa indisponível no momento da verificação descarta o candidato. Não se inventam
+páginas ou sinopses; para sinopse ausente usa-se a mensagem já adotada pelo projeto.
+
+O relatório JSON contém analisados, inseridos (ou inserções previstas em simulação),
+duplicatas, rejeitados, erros, edições sem português, duração, distribuição por gênero
+e cobertura dos prioritários. `updated` permanece zero no importador por preservação.
+A distribuição inclui os livros que já existiam; a cobertura não representa uma
+certificação editorial. Uma interrupção abrupta entre a gravação e o checkpoint pode
+subestimar as inserções no relatório, mas a retomada reconhece os registros gravados.
+O arquivo `.lock` impede duas execuções com o mesmo checkpoint. Se o processo for
+morto sem limpeza, confirme que terminou antes de remover apenas esse arquivo.
+Execuções concorrentes com checkpoints diferentes devem ser evitadas.
+
+Não há garantia de atingir 3000–5000 novas obras: metadados, quotas e disponibilidade
+prevalecem sobre a meta. Relatórios e backups locais ficam fora do Git; um registro
+resumido da validação fica em `docs/catalog-import-execution.md`.
+
+Referências técnicas: [Google Books](https://developers.google.com/books/docs/v1/using)
+e [Open Library Search API](https://openlibrary.org/dev/docs/api/search).
+
+Testes: `npm test --prefix backend`. A suíte de integração usa um MongoDB temporário
+isolado, iniciado com `mongod`, e não realiza operações destrutivas no catálogo local.
+
+### Importar diretamente em produção (Atlas)
+
+Com `ATLAS_MONGODB_URI` já configurado no `.env` da raiz, use o comando específico
+abaixo. Ele exige uma URI Atlas com banco `/litverse`, não usa o MongoDB local e
+mantém um checkpoint separado em `backups/catalog-import/atlas.json`:
+
+```bash
+npm run catalog:import:atlas --prefix backend -- --priority --max-new 5000
+npm run catalog:import:atlas --prefix backend -- --resume --max-new 5000
+npm run catalog:import:atlas --prefix backend -- --report
+
+# Depois da lista prioritária, uma execução independente de descoberta completa:
+npm run catalog:import:atlas --prefix backend -- --max-new 5000 --pages 10 --state ../backups/catalog-import/atlas-discovery.json
+```
+
+É necessário que o IP da máquina executora tenha acesso ao Atlas. A importação escreve
+diretamente na coleção `livros` de produção; os livros passam a aparecer no site sem
+copiar o banco local ou executar seed. Não é necessário novo deploy para disponibilizar
+os registros. Alterações de código da aplicação continuam sujeitas ao deploy habitual.

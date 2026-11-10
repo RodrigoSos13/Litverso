@@ -17,7 +17,9 @@
     "user:set-password": "node scripts/set-password.js",
     "synopses:refresh": "node scripts/refresh-synopses.js",
     "catalog:sync": "node src/catalogWorker.js --once",
-    "user:set-admin": "node scripts/set-admin.js"
+    "user:set-admin": "node scripts/set-admin.js",
+    "catalog:import": "node scripts/import-catalog.js",
+    "catalog:import:atlas": "node scripts/import-atlas-catalog.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

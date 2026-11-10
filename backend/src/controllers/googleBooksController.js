@@ -1,3 +1,4 @@
+import { blockedAuthor } from "../services/importPolicy.js";
 import { Book } from "../models/Book.js";
 import { googleBooks, GoogleBooksError, isSupportedLanguage } from "../services/googleBooks.js";
 
@@ -27,6 +28,7 @@ export async function importGoogleBook(req, res) {
       return res.json(existing);
     }
     const volume = await googleBooks.getVolume(id);
+    if (blockedAuthor(volume.autor)) return res.status(400).json({ message: "Autor excluído da importação." });
     if (!isSupportedLanguage(volume.idioma)) return res.status(400).json({ message: "Selecione uma edição em português ou inglês." });
     // Dados vêm do Google, nunca dos metadados enviados pelo navegador.
     // O índice único e o upsert mantêm uma edição por ID, inclusive com pedidos simultâneos.

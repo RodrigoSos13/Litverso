@@ -1,3 +1,4 @@
+import { blockedAuthor } from "../src/services/importPolicy.js";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { fileURLToPath } from "node:url";
@@ -13,7 +14,7 @@ if (!uri?.startsWith("mongodb+srv://") || new URL(uri).pathname !== "/litverse" 
 const authors = [
   "Octavia Butler", "Terry Pratchett", "Diana Wynne Jones", "Jules Verne", "Graciliano Ramos",
   "J R R Tolkien", "J K Rowling", "C S Lewis", "Jane Austen", "José Saramago",
-  "Isaac Asimov", "Ursula K Le Guin", "George R R Martin", "Clarice Lispector", "Jorge Amado",
+  "Isaac Asimov", "Ursula K Le Guin", "George R R Martin", "Clarice Lispector",
   "Conceição Evaristo", "Carolina Maria de Jesus", "Milton Hatoum", "Frank Herbert", "Arthur C Clarke",
   "Philip K Dick", "Ray Bradbury", "Douglas Adams", "Liu Cixin", "Andy Weir", "Blake Crouch",
   "Suzanne Collins", "Veronica Roth", "Cassandra Clare", "Sarah J Maas", "Rebecca Yarros",
@@ -55,7 +56,7 @@ try {
         catch { failures++; consecutiveFailures++; console.log(`Busca indisponível: ${author}`); break; }
         for (const volume of result.livros) {
           const fields = catalogFields(volume);
-          if (!fields.catalogHasCover || !compact(volume.autor).includes(compact(author))) { rejected++; continue; }
+          if (blockedAuthor(volume.autor) || !fields.catalogHasCover || !compact(volume.autor).includes(compact(author))) { rejected++; continue; }
           const duplicate = await Book.exists({ $or: [
             { googleBooksId: volume.googleBooksId },
             ...(fields.isbnSearch ? [{ isbnSearch: fields.isbnSearch }, { isbn: volume.isbn }] : []),

@@ -1,3 +1,4 @@
+import { blockedAuthor } from "./importPolicy.js";
 import { selectGoogleBookGenres } from "./bookGenres.js";
 import { matchesBookSearch, parseBookSearch } from "./bookSearch.js";
 const API_ROOT = "https://www.googleapis.com/books/v1/volumes";
@@ -134,7 +135,7 @@ export function createGoogleBooksClient({ fetchImpl = (...args) => fetch(...args
         const items = Array.isArray(data.items) ? data.items : [];
         for (let index = 0; index < items.length && cursor + index <= 1000; index++) {
           const book = normalizeVolume(items[index]);
-          if (!book || !(english ? isEnglish(book.idioma) : isPortuguese(book.idioma)) || (matchResults && !matchesBookSearch(book, term)) || ids.has(book.googleBooksId) || (book.isbn && isbns.has(book.isbn))) continue;
+          if (!book || blockedAuthor(book.autor) || !(english ? isEnglish(book.idioma) : isPortuguese(book.idioma)) || (matchResults && !matchesBookSearch(book, term)) || ids.has(book.googleBooksId) || (book.isbn && isbns.has(book.isbn))) continue;
           books.push(book); ids.add(book.googleBooksId);
           if (book.isbn) isbns.add(book.isbn);
           if (books.length === pageSize) {

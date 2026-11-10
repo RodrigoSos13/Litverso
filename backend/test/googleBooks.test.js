@@ -270,7 +270,7 @@ test("busca autores por texto livre sem combinar filtros que zeram resultados", 
       return Response.json({ totalItems: items.length, items: items.slice(offset, offset + 40) });
     } });
     const result = await client.search({ query: author });
-    assert.equal(result.livros.length, 15);
+    assert.equal(result.livros.length, author === "Machado de Assis" ? 0 : 15);
     assert.ok(result.livros.every(book => book.autor === author));
   }
 });
