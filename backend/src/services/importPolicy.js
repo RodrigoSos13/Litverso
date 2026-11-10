@@ -23,5 +23,5 @@ export function sameWork(a, b) {
   return titlesOf(a).some(t => titlesOf(b).includes(t));
 }
 export function workKey(book) {
-  return createHash('sha256').update(`${authorKey(book.autor)}|${titleKey(book.tituloOriginal || book.titulo)}|${book.numeroNaSerie ?? ''}`).digest('hex');
+  return createHash('sha256').update(`${book.genero === 'Mangá' && book.serie && book.numeroNaSerie != null ? 'series:' + titleKey(book.serie) : authorKey(book.autor) + '|' + titleKey(book.tituloOriginal || book.titulo)}|${book.numeroNaSerie ?? ''}`).digest('hex');
 }

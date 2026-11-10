@@ -19,7 +19,11 @@
     "catalog:sync": "node src/catalogWorker.js --once",
     "user:set-admin": "node scripts/set-admin.js",
     "catalog:import": "node scripts/import-catalog.js",
-    "catalog:import:atlas": "node scripts/import-atlas-catalog.js"
+    "catalog:import:atlas": "node scripts/import-atlas-catalog.js",
+    "catalog:expand:atlas": "node scripts/import-atlas-catalog.js --discovery-only --max-new 5000 --pages 10 --state ../backups/catalog-import/atlas-discovery.json",
+    "catalog:resume:atlas": "npm run catalog:expand:atlas -- --resume",
+    "catalog:manga:atlas": "node scripts/import-atlas-catalog.js --manga --state ../backups/catalog-import/atlas-manga.json",
+    "catalog:manga:resume": "npm run catalog:manga:atlas -- --resume"
   },
   "dependencies": {
     "cors": "^2.8.5",

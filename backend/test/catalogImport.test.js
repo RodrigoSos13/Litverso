@@ -105,3 +105,20 @@ test('Open Library usa metadados de uma edição real sem misturar arrays da obr
   assert.equal(book.openLibraryEditionId, '/books/OL2M');
   assert.equal(urls.length, 2);
 });
+
+test('descoberta pode pular prioritários sem mudar a lista dos checkpoints antigos', async () => {
+  const { enableDiscoveryOnly } = await import('../src/services/catalogImport.js');
+  const all = buildTasks({});
+  const discovery = buildTasks({ discoveryOnly: true });
+  assert.equal(all.length - discovery.length, priorityCatalog.length);
+  assert.ok(discovery.every(task => !task.titulo));
+  const early = { config: { genres: [] }, task: 52, cursor: 10, page: 2, stats: { inserted: 0 } };
+  enableDiscoveryOnly(early);
+  assert.equal(early.task, 0); assert.equal(early.cursor, 0); assert.equal(early.page, 0);
+  assert.equal(early.config.discoveryOnly, true);
+  const later = { config: { genres: [] }, task: priorityCatalog.length + 5, cursor: 40, page: 1 };
+  enableDiscoveryOnly(later);
+  assert.equal(later.task, 5); assert.equal(later.cursor, 40); assert.equal(later.page, 1);
+  enableDiscoveryOnly(later);
+  assert.equal(later.task, 5);
+});

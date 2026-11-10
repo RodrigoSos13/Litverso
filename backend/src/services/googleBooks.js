@@ -45,6 +45,7 @@ export function normalizeVolume(volume) {
   return {
     googleBooksId: volume.id,
     titulo: plainText(info.title, 500),
+    subtitulo: plainText(info.subtitle, 500),
     autor: Array.isArray(info.authors) ? info.authors.map(author => plainText(author, 200)).filter(Boolean).join(", ") || "Autor não informado" : "Autor não informado",
     genero: generos[0],
     generos,

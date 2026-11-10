@@ -1,9 +1,11 @@
+import { mangaTasks, mangaCatalog } from './mangaImport.js';
 import { readFile } from 'node:fs/promises';
 import { catalogFields } from './catalogFields.js';
 import { blockedAuthor, matchesCandidate, sameWork, workKey } from './importPolicy.js';
 export const priorityCatalog = JSON.parse(await readFile(new URL('../data/priorityCatalog.json', import.meta.url), 'utf8'));
 const topics = ['Poesia brasileira', 'Contos e crônicas', 'Policial nórdico', 'Fantasia sombria', 'Realismo mágico', 'Literatura asiática', 'Ficção histórica', 'Romance gótico', 'Romance de época', 'Drama', 'Literatura LGBTQIA+', 'Biografias', 'História mundial', 'Divulgação científica', 'Tecnologia e computação', 'Cibersegurança', 'Economia e negócios', 'Mitologia', 'Filosofia', 'Sociologia', 'Literatura de viagem', 'Espiritualidade', 'Humor'];
-export function buildTasks({ priority = false, genres = [], author, series } = {}) {
+export function buildTasks({ manga = false, priority = false, discoveryOnly = false, genres = [], author, series } = {}) {
+  if (manga) return mangaTasks(series ? mangaCatalog.filter(s => [s.serie, ...(s.aliases || [])].some(name => name.toLowerCase() === series.toLowerCase())) : mangaCatalog);
   const selected = priorityCatalog.filter(b => !genres.length || genres.some(g => b.genero.toLowerCase() === g.toLowerCase()));
   if (author) return blockedAuthor(author) ? [] : [{ autor: author, ...(series ? { serie: series } : {}) }];
   if (series) return [{ serie: series }];
@@ -12,22 +14,36 @@ export function buildTasks({ priority = false, genres = [], author, series } = {
   const discovery = genres.length ? genres : topics;
   // Rotate authors across genres to avoid exhausting the limit on the first genre.
   authors.sort((a,b) => a.autor.localeCompare(b.autor));
-  return [...selected, ...authors, ...discovery.map(genero => ({ query: genero, genero }))];
+  return [...(discoveryOnly ? [] : selected), ...authors, ...discovery.map(genero => ({ query: genero, genero }))];
+}
+export function enableDiscoveryOnly(state) {
+  if (state.config.discoveryOnly) return state;
+  if (state.config.priority || state.config.author || state.config.series) throw new Error('Este checkpoint não é de uma expansão completa.');
+  const previous = buildTasks(state.config);
+  const prefixLength = previous.findIndex(task => !task.titulo);
+  const offset = prefixLength < 0 ? previous.length : prefixLength;
+  const wasInPriority = (state.task || 0) < offset;
+  state.task = Math.max(0, (state.task || 0) - offset);
+  if (wasInPriority) { state.cursor = 0; state.page = 0; }
+  state.config.discoveryOnly = true;
+  state.complete = false;
+  return state;
 }
 export function duplicateOf(book, existing) {
   const isbn = String(book.isbn || '').replace(/[\s-]/g, '').toLowerCase();
   return existing.find(b => (book.googleBooksId && b.googleBooksId === book.googleBooksId) ||
     (book.openLibraryId && b.openLibraryId === book.openLibraryId) ||
+    (book.genero === 'Mangá' && b.genero === 'Mangá' && book.serie && book.serie === b.serie && book.numeroNaSerie != null && book.numeroNaSerie === b.numeroNaSerie) ||
     (isbn && String(b.isbn || '').replace(/[\s-]/g, '').toLowerCase() === isbn) || sameWork(b, book));
 }
-export async function runImport({ tasks, source, repository, state, checkpoint = async () => {}, maxNew = 5000, pages = 10, dryRun = false, log = () => {} }) {
+export async function runImport({ tasks, source, repository, state, checkpoint = async () => {}, maxNew = 5000, pages = 10, dryRun = false, log = () => {}, shouldStop = () => false }) {
   const existing = await repository.list();
   state.results ||= [];
   state.stats ||= { analyzed: 0, inserted: 0, duplicates: 0, updated: 0, rejected: 0, withoutPortuguese: 0, errors: 0 };
   state.task ||= 0; state.cursor ||= 0; state.page ||= 0;
   let lastCheckpoint = Date.now();
   let newThisRun = 0;
-  while (state.task < tasks.length && newThisRun < maxNew) {
+  while (state.task < tasks.length && newThisRun < maxNew && !shouldStop()) {
     const task = tasks[state.task];
     let result;
     try { result = await source.search(task, state.cursor); }
@@ -62,7 +78,7 @@ export async function runImport({ tasks, source, repository, state, checkpoint =
       if (!/^pt(?:-|$)/i.test(book.idioma)) state.stats.withoutPortuguese++;
       state.results.push({ task, title: book.titulo, status: dryRun ? 'would-insert' : inserted ? 'inserted' : 'duplicate', source: payload.origemImportacao });
     }
-    if (!accepted && !result.livros.length) state.results.push({ task, status: 'unresolved', reason: 'NO_VERIFIED_EDITION' });
+    if (!accepted && !result.livros.length && !result.hasMore) state.results.push({ task, status: 'unresolved', reason: 'NO_VERIFIED_EDITION' });
     state.page++;
     if (newThisRun < maxNew) {
       if (result.hasMore && Number.isInteger(result.nextIndex) && result.nextIndex > state.cursor && state.page < pages) state.cursor = result.nextIndex;
@@ -72,7 +88,7 @@ export async function runImport({ tasks, source, repository, state, checkpoint =
     state.elapsedMs = (state.elapsedMs || 0) + Date.now() - lastCheckpoint;
     lastCheckpoint = Date.now();
     await checkpoint(state);
-    log({ task: state.task, totalTasks: tasks.length, ...state.stats });
+    log({ task: state.task, totalTasks: tasks.length, phase: task.manga ? 'manga' : task.titulo ? 'priority' : task.autor ? 'author' : 'subject', query: task.titulo || task.autor || task.serie || task.query, ...state.stats });
   }
   state.complete = state.task >= tasks.length;
   state.distribution = {};
