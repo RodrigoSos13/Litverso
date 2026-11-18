@@ -277,3 +277,62 @@ npm run catalog:import:atlas --prefix backend -- --max-new 5000 --pages 10 --sta
 diretamente na coleção `livros` de produção; os livros passam a aparecer no site sem
 copiar o banco local ou executar seed. Não é necessário novo deploy para disponibilizar
 os registros. Alterações de código da aplicação continuam sujeitas ao deploy habitual.
+
+
+### Atalhos de expansão no Atlas
+
+Dentro de `backend/`, `npm run catalog:expand:atlas` inicia a descoberta com
+`--discovery-only`, sem repetir os 500 candidatos prioritários. Para continuar
+uma execução interrompida, use `npm run catalog:resume:atlas`. Esse atalho também
+converte o checkpoint antigo de expansão: se ele ainda estava nos prioritários,
+passa ao primeiro autor; se já estava na descoberta, mantém a consulta e o cursor.
+As contagens anteriores são preservadas. Os logs informam `phase` e `query`.
+
+Na versão atual, Ctrl+C solicita encerramento após o lote atual; aguarde a mensagem
+final para que o lock seja removido. Processos iniciados antes dessa correção não
+possuem esse tratamento. Se um processo antigo já terminou e deixou a mensagem
+“Checkpoint em uso”, remova somente o arquivo
+`backups/catalog-import/atlas-discovery.json.lock` antes de retomar. Nunca remova o
+lock enquanto outra importação com esse checkpoint estiver executando.
+
+
+### Importação de mangás no catálogo existente
+
+A referência `backend/src/data/mangaCatalog.json` contém 61 séries, começando com
+One Piece, Vinland Saga, Ajin, Berserk e Vagabond. Usa somente Google Books, sem
+Open Library neste modo. Dentro de `backend/`:
+
+```bash
+npm run catalog:manga:atlas
+npm run catalog:manga:resume
+npm run catalog:manga:atlas -- --report
+```
+
+Os atalhos gravam diretamente no Atlas configurado e usam o checkpoint separado
+`backups/catalog-import/atlas-manga.json`. `--max-new 3` permite uma amostra pequena;
+`--resume` continua a mesma execução. Sem `--max-new` ou `--pages`, este modo percorre
+as páginas acessíveis à integração, sem uma cota pequena de volumes por série.
+Não há garantia de localizar a coleção inteira: os limites de paginação, idioma e
+metadados da API continuam aplicáveis.
+
+O importador valida série, autoria e número de volume explicitamente informado no
+título/subtítulo. Pesquisa aliases conhecidos e, após as buscas gerais, consulta
+especificamente números ausentes até o maior volume observado nas respostas da API.
+Isso gera consultas, nunca registros fictícios. Português tem prioridade; inglês é
+aceito como alternativa. Nenhuma edição em `pt` é rotulada artificialmente `pt-BR`.
+As edições inseridas mantêm os metadados da fonte e o gênero principal `Mangá`.
+Não se altera o gênero nem qualquer dado dos registros existentes.
+
+Volumes com títulos traduzidos e autores de roteiro/arte conhecidos usam identidade
+normalizada por série e número, além de ISBN e ID Google existentes. Naruto Shippuden
+é associado a Naruto. Tokyo Ghoul:re e Dragon Ball Super permanecem distintos das
+séries originais. Partes de JoJo mantêm numeração separada. Compilações omnibus,
+edições deluxe com numeração incompatível, capítulos avulsos, guides, novels e obras
+sem número verificável são descartados. Não se presume equivalência entre
+numerações editoriais distintas, como Dragon Ball e Dragon Ball Z.
+
+O JSON final inclui `bySeries`: inseridos nesta execução, registros disponíveis e
+números observados por série. Zero inserções pode significar obras já existentes;
+zero números observados indica ausência de volumes validados nas consultas realizadas.
+Confira também `complete`, `lastError` e os motivos das rejeições. O relatório é parcial
+até `complete: true`. Não existem novas telas, coleções de usuários ou mudanças de UI.
